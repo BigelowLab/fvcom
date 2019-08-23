@@ -1,0 +1,34 @@
+---
+title: "necofs"
+author: "Bigelow Computational Ecology Lab"
+date: "8/22/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+## FVCOM and NECOFS
+
+[FVCOM](http://fvcom.smast.umassd.edu/fvcom/) produces ocean circulation models on an irregular mesh. [Here](http://fvcom.smast.umassd.edu/wp-content/uploads/2013/11/MITSG_12-25.pdf) is the user manual which looks like a good cure for being bored! [NECOFS](http://fvcom.smast.umassd.edu/necofs/) leverages this mesh to deliver models for the Gulf of Maine, Mass coastal waters and a small number of estuaries.  NECOFS provides an [interactive web map](http://134.88.228.119:8080/fvcomwms/)
+
+## Data Access
+
+Data are served via OPeNDAP on a [THREDDS server](http://www.smast.umassd.edu:8080/thredds/catalog.html)  THREDDS servers blend a simple user-navigable interface (similar to a file browser) with a machine readable data [XML map](http://www.smast.umassd.edu:8080/thredds/catalog.xml)  Note the change in the file extension.  Files served this way permit the user to treat the product as if it were a local file, allowing selective downlaod and access in a familar NetCDF format with needing to downlaod the entire file.
+
+NECOFS has it's own [THREDDS directory](http://www.smast.umassd.edu:8080/thredds/catalog/models/fvcom/NECOFS/catalog.html) including a subdirectory for the GoM FVCOM models.
+
+
+## Accessing FVCOM GoM data
+
+```{r}
+source("necofs.R")
+library(ncdf4)
+uri_base <- "http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Archive/NECOFS_GOM/2019/"
+uri <- file.path(uri_base, "gom4_201901.nc")
+x <- nc_open(uri)
+```
+
+Get the timestamps for either provides you with a choice.  
