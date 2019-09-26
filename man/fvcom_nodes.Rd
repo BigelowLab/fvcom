@@ -4,18 +4,36 @@
 \alias{fvcom_nodes}
 \title{Retrieve node locations}
 \usage{
-fvcom_nodes(x, what = c("lonlat", "xy")[1],
-  index = seq_len(fvcom_count(x, what = "node")))
+fvcom_nodes(x, what = c("lonlat", "xy")[1], index = NULL,
+  form = c("table", "sf")[1], include = NULL)
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}
 
 \item{what}{character, either 'lonlat' (degrees) or 'xy' (meters)}
 
-\item{index}{numeric, a 1-based index of desired nodes}
+\item{index}{NULL or numeric, a 1-based index of desired nodes.  If NULL then
+all nodes are returned}
+
+\item{form}{character either 'table' or 'sf'}
+
+\item{include}{character or NULL items to add to the returned data. Multiple items
+  can be included, but note that "none" is the same as NULL so nothing gets included.
+\itemize{
+  \item{none don't include any extra information  - same as setting to NULL}
+  \item{nbs include a list of the indices of the neighbors}
+  \item{art1 Area of elements around a node}
+  \item{art2 Area of Node-Base Control volume}
+}}
 }
 \value{
-data frame (tibble) of node locations
+data frame (tibble) of node locations including...
+\itemize{
+  \item{node node index identifier}
+  \item{lon (or x) locations value}
+  \item{lat (or y) location value}
+}
+Or a sf collection of type POINT
 }
 \description{
 Retrieve node locations

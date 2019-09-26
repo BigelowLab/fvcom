@@ -4,8 +4,8 @@
 \alias{fvcom_elems}
 \title{Retrieve element locations}
 \usage{
-fvcom_elems(x, what = c("lonlat", "xy")[1],
-  index = seq_len(fvcom_count(x, what = "elems")))
+fvcom_elems(x, what = c("lonlat", "xy")[1], index = NULL,
+  form = c("table", "sf"), include = NULL)
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}
@@ -13,9 +13,23 @@ fvcom_elems(x, what = c("lonlat", "xy")[1],
 \item{what}{character, either 'lonlat' (degrees) or 'xy' (meters)}
 
 \item{index}{numeric, a 1-based index of desired nodes}
+
+\item{form}{character either 'table' or 'sf'
+#' @param include character or NULL items to add to the returned data. Multiple items
+  can be included, but note that "none" is the same as NULL so nothing gets included.
+\itemize{
+  \item{none don't include any extra information  - same as setting to NULL}
+  \item{nbs include a list of the indices of the neighbors}
+}}
 }
 \value{
-data frame (tibble) of node locations
+data frame (tibble) of element locations including...
+\itemize{
+  \item{elem element index identifier}
+  \item{lon (or x) locations value}
+  \item{lat (or y) location value}
+}
+Or a sf collection of type POINT
 }
 \description{
 Retrieve element locations

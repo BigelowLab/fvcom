@@ -8,13 +8,12 @@ Depends:
 Imports:
     ncdf4,
     tibble,
-    dplyr
+    dplyr,
+    raster,
+    sf
 Maintainer: Ben Tupper <btupper@bigelow.org>
 Author: Ben Tupper <btupper@bigelow.org>
 URL: https://github.com/BigelowLab/fvcom
 License: MIT + file LICENSE
-Collate:
-    fvcom-package.R
-    nc.R
 LazyData: true
 RoxygenNote: 6.1.1

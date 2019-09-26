@@ -5,4 +5,5 @@
 #' @name fvcom-package
 #' @aliases fvcom
 #' @importFrom dplyr %>%
+#' @importFrom rlang !! :=
 NULL
