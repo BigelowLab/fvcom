@@ -2,7 +2,7 @@ library(sf)
 library(fvcom)
 library(ncdf4)
 library(tidyverse)
-setwd("/mnt/ecocast/corecode/R/fvcom")
+setwd("/mnt/ecocast/corecode/R/fvcom/inst")
 mgrepl <- function(pattern, x, op = `|`, ... ){
   Reduce(op, lapply(pattern, grepl, x, ...))
 }

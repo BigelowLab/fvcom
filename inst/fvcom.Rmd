@@ -65,7 +65,7 @@ Element neighbors are those that share edges.
 [6,]    5    0    7
 ```
 
-+ `ntve[node]`` # elems surrounding each node
++ `ntve[node]` # elems surrounding each node
 
 ```
 > ncdf4::ncvar_get(x, "ntve")
