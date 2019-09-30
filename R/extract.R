@@ -27,6 +27,56 @@ get_node_mesh <- function(x, vars = 'zeta',
 }
 
 
+
+#' Compute mesh (polygons) for nodes or elements
+#'
+#' @export
+#' @param x FVCOM ncdf4 object
+#' @param where character, either 'nodes' or "elems"
+#' @param ... further arguments for \code{\link{get_elem_mesh_geometry}} or \code{\link{get_nodes_mesh_geometry}}
+#' @return sf collection of POLYGON with the following variable
+#' \itemize{
+#'   \item{p1, p2, p3 the point identifiers for the three points defining the polygon}
+#'   \item{geometry 4 point polygon (closed so first and last the same)}
+#' }
+get_mesh_geometry <- function(x, where = c("nodes", "elems"), ...){
+  switch(tolower(where[1]),
+    "elems" = get_elem_mesh_geometry(x, ...),
+              get_node_mesh_geometry(x, ...))
+
+}
+
+#' Compute the mesh (polygons) for elements
+#'
+#' @export
+#' @param x FVCOM ncdf4 object
+#' @param what character either 'lonlat' or 'xy'
+#' @return sf collection of POLYGON with the following variable
+#' \itemize{
+#' \item{p1, p2, p3 the node identifiers for the three points define the polygon}
+#' \item{geometry 4 point polygon (closed so first and last the same)}
+#' }
+get_elem_mesh_geometry <- function(x, what = 'lonlat'){
+
+  p <- distinct_polygons(x, where = 'elems')
+  m <- as.matrix(p)
+  m <- cbind(m, m[,1])
+  elems <- fvcom_elems(x, form = 'table', what = what)
+  xy <- elems %>%
+    dplyr::select(-elem) %>%
+    as.matrix()
+  nm <- colnames(xy)
+  g <- lapply(seq_len(nrow(p)),
+    function(i){
+      sf::st_polygon(list(xy[m[i,],]))
+    })
+
+  p %>%
+    dplyr::mutate( geometry = g) %>%
+    sf::st_sf(sf_column_name = "geometry", crs = fvcom_crs(what))
+
+}
+
 #' Compute the mesh (polygons) for nodes
 #'
 #' @export
@@ -40,7 +90,7 @@ get_node_mesh <- function(x, vars = 'zeta',
 get_node_mesh_geometry <- function(x, what = 'lonlat'){
 
   p <- distinct_polygons(x, what = 'nodes')
-  m <-as.matrix(p)
+  m <- as.matrix(p)
   nodes <- fvcom_nodes(x, form = 'table', what = what)
   xy <- nodes %>%
     dplyr::select(-node) %>%
@@ -64,39 +114,39 @@ get_node_mesh_geometry <- function(x, what = 'lonlat'){
 #'
 #' @export
 #' @param x FVCOM ncdf4 object
-#' @param what character, either 'nodes' or "elems"
+#' @param where character, either 'nodes' or "elems"
 #' @return ordered tibble of p1, p2, and p3
-distinct_polygons <- function(x, what = c("nodes", "elems")[1]){
+distinct_polygons <- function(x, where = c("nodes", "elems")[1]){
 
-  if (tolower(what[1]) == "nodes"){
+  if (tolower(where[1]) == "nodes"){
     n   <- ncdf4::ncvar_get(x, "ntsn")
     nbs <- ncdf4::ncvar_get(x, "nbsn")
     nav <- cbind(nbs, n)
     nc <- ncol(nav)
-  } else {
-    n   <- ncdf4::ncvar_get(x, "ntve")
-    nbs <- ncdf4::ncvar_get(x, "nbve")
-    nav <- cbind(nbs, n)
-    nc <- ncol(nav)
-  }
-
-  # generate a lost of matrices for each node - there will be replicates
-  ns <- lapply(seq_len(nrow(nav)),
+    # generate a lost of matrices for each node - there will be replicates
+    ns <- lapply(seq_len(nrow(nav)),
               function(i){
                 t(sapply(seq(from = 2, to = nav[i,nc]-2) ,
                              function(j){
                                c(i, nav[i,j:(j+1)])
                              }))
               })
-  # join them, sort by node number (across rows)
-  ns <- do.call(rbind, ns)
-  ns <- t(apply(ns, 1, sort))
-  # convert to tibble and arrange by column
-  # retain only the unique ones
-  colnames(ns) <- paste0("p", 1:3)
-  dplyr::as_tibble(ns) %>%
-    dplyr::arrange(p1, p2, p3) %>%
-    dplyr::distinct_all()
+    # join them, sort by node number (across rows)
+    ns <- do.call(rbind, ns)
+    ns <- t(apply(ns, 1, sort))
+    # convert to tibble and arrange by column
+    # retain only the unique ones
+    colnames(ns) <- paste0("p", 1:3)
+    r <- dplyr::as_tibble(ns)
+  } else {
+    nv <- t(apply(ncdf4::ncvar_get(x, "nv"), 1, sort))
+    colnames(nv) <- paste0("p", 1:3)
+    r <- dplyr::as_tibble(nv)
+  }
+
+  r %>%
+      dplyr::arrange(p1, p2, p3) %>%
+      dplyr::distinct_all()
 }
 
 #' Retrieve bathymetry "sea_floor_depth_below_geoid" in meters

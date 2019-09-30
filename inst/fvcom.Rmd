@@ -1,5 +1,5 @@
 ---
-title: "necofs"
+title: "fvcom - nodes and elements"
 author: "Bigelow Computational Ecology Lab"
 date: "8/22/2019"
 output: html_document
@@ -9,26 +9,93 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 
 ```
-
-## FVCOM and NECOFS
-
-[FVCOM](http://fvcom.smast.umassd.edu/fvcom/) produces ocean circulation models on an irregular mesh. [Here](http://fvcom.smast.umassd.edu/wp-content/uploads/2013/11/MITSG_12-25.pdf) is the user manual which looks like a good cure for being bored! [NECOFS](http://fvcom.smast.umassd.edu/necofs/) leverages this mesh to deliver models for the Gulf of Maine, Mass coastal waters and a small number of estuaries.  NECOFS provides an [interactive web map](http://134.88.228.119:8080/fvcomwms/)
-
-## Data Access
-
-Data are served via OPeNDAP on a [THREDDS server](http://www.smast.umassd.edu:8080/thredds/catalog.html)  THREDDS servers blend a simple user-navigable interface (similar to a file browser) with a machine readable data [XML map](http://www.smast.umassd.edu:8080/thredds/catalog.xml)  Note the change in the file extension.  Files served this way permit the user to treat the product as if it were a local file, allowing selective downlaod and access in a familar NetCDF format with needing to downlaod the entire file.
-
-NECOFS has it's own [THREDDS directory](http://www.smast.umassd.edu:8080/thredds/catalog/models/fvcom/NECOFS/catalog.html) including a subdirectory for the GoM FVCOM models.
-
-
-## Accessing FVCOM GoM data
+## Accessing FVCOM data
 
 ```{r}
-source("necofs.R")
+library("fvcom")
 library(ncdf4)
 uri_base <- "http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Archive/NECOFS_GOM/2019/"
 uri <- file.path(uri_base, "gom4_201901.nc")
 x <- nc_open(uri)
 ```
 
-Get the timestamps for either provides you with a choice.  
+## Elements
+
+### Locating elements
+
+Retrieve the locations of elements using `fvcom_elems()`
+
++ `xc[nele]` zonal x-coordinate
+
++ `yc[nele]` zonal y-coordinate
+
++ `lonc[nele]` zonal longitude
+
++ `latc[nele]` zonal latitude
+
+### Relationships among elements and nodes
+
++ `nv[nele,three]` nodes surrounding element
+
+Each node is
+
+```
+> head(ncvar_get(x, 'nv'))
+     [,1] [,2] [,3]
+[1,]   96    1   95       # <- three nodes enclose an element
+[2,]   95    1    2
+[3,]    3   95    2
+[4,]   95    3   97
+[5,]   97    3   98
+[6,]    4   98    3
+```
+
++ `nbe[nele,three]`  elements surrounding each element
+
+Element neighbors are those that share edges.
+
+```
+> head(ncvar_get(x, 'nbe'))
+     [,1] [,2] [,3]
+[1,]    2  187    0       # <- an element can have at most 3 neighboring
+[2,]    0    3    1       #    elements.  0 = no neighbor
+[3,]    2    0    4
+[4,]    5  188    3
+[5,]    6  190    4
+[6,]    5    0    7
+```
+
++ `ntve[node]`` # elems surrounding each node
+
+```
+> ncdf4::ncvar_get(x, "ntve")
+[1] 2 2 4 3 3 3
+
+```
+
++ `nbve[node,maxelem]` elems surrounding each node
+
+```
+> head(ncvar_get(x, "nbve"))
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9]
+[1,]    2    1    0    0    0    0    0    0    0
+[2,]    3    2    0    0    0    0    0    0    0
+[3,]    6    5    4    3    0    0    0    0    0
+[4,]    8    7    6    0    0    0    0    0    0
+[5,]   10    9    8    0    0    0    0    0    0
+[6,]   12   11   10    0    0    0    0    0    0
+```
+
+### Variables at elements
+
+"Vector values, such as velocity are defined at the element centroids."
+
++ `v [nele,siglay,time]` Northward Water Velocity
+
++ `u [nele,siglay,time]` Eastward Water Velocity
+
++ `ww [nele,siglay,time]` Upward Water Velocity
+
++ `ua[nele,time]` Vertically Averaged x-velocity
+
++ `va[nele,time``] Vertically Averaged y-velocity

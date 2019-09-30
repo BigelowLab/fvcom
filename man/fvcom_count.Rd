@@ -4,12 +4,12 @@
 \alias{fvcom_count}
 \title{Retrieve a count of nodes or elements}
 \usage{
-fvcom_count(x, what = c("nodes", "elems")[1])
+fvcom_count(x, where = c("nodes", "elems")[1])
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}
 
-\item{what}{character, either 'nodes'( or 'node') or 'elems' (or 'elem')}
+\item{where}{character, either 'nodes'( or 'node') or 'elems' (or 'elem')}
 }
 \value{
 number of nodes or elements

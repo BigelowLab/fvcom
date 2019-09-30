@@ -12,6 +12,7 @@ if (FALSE) {
   x <- nc_open(uri)
 }
 
+
 #getting node network
 if(FALSE){
   index <- seq_len(fvcom_count(x,"nodes"))

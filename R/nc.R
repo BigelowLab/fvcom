@@ -37,13 +37,13 @@ fvcom_time <- function(x,
 #'
 #' @export
 #' @param x FVCOM ncdf4 object
-#' @param what character, either 'nodes'( or 'node') or 'elems' (or 'elem')
+#' @param where character, either 'nodes'( or 'node') or 'elems' (or 'elem')
 #' @return  number of nodes or elements
-fvcom_count <- function(x, what = c("nodes", "elems")[1]){
+fvcom_count <- function(x, where = c("nodes", "elems")[1]){
 
   if (!is_ncdf4(x)) stop("input must be ncdf4 class object")
 
-  switch(tolower(what[1]),
+  switch(tolower(where[1]),
          'node' = x$dim$node$len,
          'nodes' = x$dim$node$len,
          x$dim$nele$len)
@@ -152,7 +152,7 @@ fvcom_elems <- function(x,
 
   if (!is_ncdf4(x)) stop("input must be ncdf4 class object")
 
-  idx <- seq_len(fvcom_count(x, what = 'elems'))
+  idx <- seq_len(fvcom_count(x, where = 'elems'))
   r <- switch(tolower(what[1]),
          'lonlat'= dplyr::tibble(elem = idx,
                                  lon = ncdf4::ncvar_get(x, varid = "lonc"),
@@ -329,22 +329,6 @@ time_index <- function(x,
                          tz = 'UTC')){
   ix <- findInterval(fvcom_time(x), time)
   ix[ix < 1] <- 1
-}
-
-#' Convert a time to a time-index
-#'
-#' @export
-#' @param x FVCOM ncdf4 object
-#' @param time one or more POSIXct times - UTC
-#' @return 1-based index
-time_index <- function(x,
-                       time = as.POSIXct(
-                         paste(Sys.Date(), "12:00:00"),
-                         format = '%Y-%m-%d %H:%M:%S',
-                         tz = 'UTC')){
-  ix <- findInterval(time, fvcom_time(x))
-  ix[ix < 1] <- 1
-  ix
 }
 
 #' Convert a time to a sigma level or sigma layer

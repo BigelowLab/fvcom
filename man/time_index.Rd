@@ -6,26 +6,15 @@
 \usage{
 time_index(x, time = as.POSIXct(paste(Sys.Date(), "12:00:00"), format =
   "\%Y-\%m-\%d \%H:\%M:\%S", tz = "UTC"))
-
-time_index(x, time = as.POSIXct(paste(Sys.Date(), "12:00:00"), format =
-  "\%Y-\%m-\%d \%H:\%M:\%S", tz = "UTC"))
 }
 \arguments{
-\item{x}{FVCOM ncdf4 object}
-
-\item{time}{one or more POSIXct times - UTC}
-
 \item{x}{FVCOM ncdf4 object}
 
 \item{time}{one or more POSIXct times - UTC}
 }
 \value{
 1-based index
-
-1-based index
 }
 \description{
-Convert a time to a time-index
-
 Convert a time to a time-index
 }
