@@ -11,7 +11,7 @@ get_mesh_geometry(x, where = c("nodes", "elems"), ...)
 
 \item{where}{character, either 'nodes' or "elems"}
 
-\item{...}{further arguments for \code{\link{get_elem_mesh_geometry}} or \code{\link{get_nodes_mesh_geometry}}}
+\item{...}{further arguments for \code{\link{get_elem_mesh_geometry}} or \code{\link{get_node_mesh_geometry}}}
 }
 \value{
 sf collection of POLYGON with the following variable

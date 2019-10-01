@@ -1,19 +1,20 @@
-#' Retrieve the mesh with assigned values
+#' Retrieve the node-based mesh with assigned values
 #'
 #' @param x FVCOM ncdf4 object
 #' @param vars character name of the variable
 #' @param mesh the mesh geometry
 #' @param fun function to summarize the variable for each polygon
 #' @param ... further arguments for selecting \code{get_node_var}
-#' @return sf object with mesh geometry and the var (computed as mean of nodes)
-get_node_mesh <- function(x, vars = 'zeta',
+#' @return sf object with mesh geometry and the var (computed as fun of nodes)
+get_node_mesh <- function(x,
+                          vars = 'zeta',
                           mesh = get_node_mesh_geometry(x),
                           fun = mean,
                           ...){
   vv <- sapply(vars, function(var) get_node_var(x, var, ...), simplify = FALSE)
   m <- as.matrix(mesh %>%
                    sf::st_set_geometry(NULL) %>%
-                   dplyr::select(p1,p2,p3))
+                   dplyr::select(.data$p1, .data$p2, .data$p3))
   for (var in vars){
     mesh <- mesh %>%
       tibble::add_column(!!var :=
@@ -27,13 +28,34 @@ get_node_mesh <- function(x, vars = 'zeta',
 }
 
 
+#' Retrieve the node-based mesh with assigned values
+#'
+#' @param x FVCOM ncdf4 object
+#' @param vars character name of the variable
+#' @param mesh the mesh geometry
+#' @param ... further arguments for selecting \code{get_node_var}
+#' @return sf object with mesh geometry and the var
+get_elem_mesh <- function(x,
+                          vars = c("u", "v"),
+                          mesh = get_elem_mesh_geometry(x),
+                          ...){
+
+  vv <- sapply(vars, function(var) get_node_var(x, var, ...), simplify = FALSE)
+
+
+}
+
+
+
+
+
 
 #' Compute mesh (polygons) for nodes or elements
 #'
 #' @export
 #' @param x FVCOM ncdf4 object
 #' @param where character, either 'nodes' or "elems"
-#' @param ... further arguments for \code{\link{get_elem_mesh_geometry}} or \code{\link{get_nodes_mesh_geometry}}
+#' @param ... further arguments for \code{\link{get_elem_mesh_geometry}} or \code{\link{get_node_mesh_geometry}}
 #' @return sf collection of POLYGON with the following variable
 #' \itemize{
 #'   \item{p1, p2, p3 the point identifiers for the three points defining the polygon}
@@ -63,7 +85,7 @@ get_elem_mesh_geometry <- function(x, what = 'lonlat'){
   m <- cbind(m, m[,1])
   elems <- fvcom_elems(x, form = 'table', what = what)
   xy <- elems %>%
-    dplyr::select(-elem) %>%
+    dplyr::select(-.data$elem) %>%
     as.matrix()
   nm <- colnames(xy)
   g <- lapply(seq_len(nrow(p)),
@@ -89,11 +111,11 @@ get_elem_mesh_geometry <- function(x, what = 'lonlat'){
 #' }
 get_node_mesh_geometry <- function(x, what = 'lonlat'){
 
-  p <- distinct_polygons(x, what = 'nodes')
+  p <- distinct_polygons(x, where = 'nodes')
   m <- as.matrix(p)
   nodes <- fvcom_nodes(x, form = 'table', what = what)
   xy <- nodes %>%
-    dplyr::select(-node) %>%
+    dplyr::select(-.data$node) %>%
     as.matrix()
   nm <- colnames(xy)
   g <- lapply(seq_len(nrow(p)),
@@ -145,7 +167,7 @@ distinct_polygons <- function(x, where = c("nodes", "elems")[1]){
   }
 
   r %>%
-      dplyr::arrange(p1, p2, p3) %>%
+      dplyr::arrange(.data$p1, .data$p2, .data$p3) %>%
       dplyr::distinct_all()
 }
 
@@ -154,6 +176,7 @@ distinct_polygons <- function(x, where = c("nodes", "elems")[1]){
 #'
 #' @export
 #' @param x ncdf4 object
+#' @param form character specifies output form "table", "raster" or "mesh"
 #' @return something
 bathymetry <- function(x,
                        form = c("table", "raster", "mesh")[1]){
@@ -165,7 +188,7 @@ bathymetry <- function(x,
     xr <- range(xyz$lon)
     yr <- range(xyz$lat)
     r <- 0.01
-    template <- raster(res = r,
+    template <- raster::raster(res = r,
                        xmn = xr[1] - r/2,
                        xmx = xr[2] + r/2,
                        ymn = yr[1] - r/2,

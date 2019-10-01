@@ -9,7 +9,7 @@ plot_mesh_geometry <- function(mesh,
                                ...,
                                label_vertices = TRUE,
                                label_polygons = FALSE){
-    plot(st_geometry(mesh), ...)
+    plot(sf::st_geometry(mesh), ...)
     if (label_polygons){
 
         cg <- suppressWarnings(sf::st_centroid(mesh)) %>%

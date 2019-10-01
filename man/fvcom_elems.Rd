@@ -14,8 +14,9 @@ fvcom_elems(x, what = c("lonlat", "xy")[1], index = NULL,
 
 \item{index}{numeric, a 1-based index of desired nodes}
 
-\item{form}{character either 'table' or 'sf'
-#' @param include character or NULL items to add to the returned data. Multiple items
+\item{form}{character either 'table' or 'sf'}
+
+\item{include}{character or NULL items to add to the returned data. Multiple items
   can be included, but note that "none" is the same as NULL so nothing gets included.
 \itemize{
   \item{none don't include any extra information  - same as setting to NULL}

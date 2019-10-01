@@ -9,6 +9,8 @@ bathymetry(x, form = c("table", "raster", "mesh")[1])
 }
 \arguments{
 \item{x}{ncdf4 object}
+
+\item{form}{character specifies output form "table", "raster" or "mesh"}
 }
 \value{
 something

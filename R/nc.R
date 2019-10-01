@@ -86,7 +86,7 @@ fvcom_nodes <- function(x,
                'xy'    = dplyr::tibble(node = idx,
                                        x1 = ncdf4::ncvar_get(x, varid = "x"),
                                        y = ncdf4::ncvar_get(x, varid = "y")) %>%
-                         dplyr::rename(x = x1) )
+                         dplyr::rename(x = .data$x1) )
 
   if (inherits(include, "character")){
     include <- tolower(include)
@@ -131,7 +131,7 @@ fvcom_nodes <- function(x,
 #' @param what character, either 'lonlat' (degrees) or 'xy' (meters)
 #' @param index numeric, a 1-based index of desired nodes
 #' @param form character either 'table' or 'sf'
-#' #' @param include character or NULL items to add to the returned data. Multiple items
+#' @param include character or NULL items to add to the returned data. Multiple items
 #'   can be included, but note that "none" is the same as NULL so nothing gets included.
 #' \itemize{
 #'   \item{none don't include any extra information  - same as setting to NULL}
@@ -160,7 +160,7 @@ fvcom_elems <- function(x,
          'xy'    = dplyr::tibble(elem = idx,
                                  x1 = ncdf4::ncvar_get(x, varid = "xc"),
                                  y = ncdf4::ncvar_get(x, varid = "yc")) %>%
-                   dplyr::rename(x = x1) )
+                   dplyr::rename(x = .data$x1) )
 
   if (inherits(include, "character")){
     include <- tolower(include)
@@ -279,10 +279,10 @@ get_node_var <- function(x, var = 'zeta',
   if (!is_ncdf4(x)) stop("input must be ncdf4 class object")
 
   v <- list_vars(x, collapse = FALSE) %>%
-      dplyr::filter(name == var[1])
+      dplyr::filter(.data$name == var[1])
   if (nrow(v) == 0) stop("variable not found:", var[1])
   if (inherits(time, 'POSIXct')) time <- time_index(x, time)
-  if (y_transform) y <- sigma_index(x, sigma, what = v$name[1][2])
+  if (y_transform) y <- sigma_index(x, y, what = v$name[1][2])
 
   start <- node[1]
   count <- length(node)

@@ -6,5 +6,5 @@
 \alias{fvcom}
 \title{fvcom-package}
 \description{
-Convenience tools for accessing FVCOM NetCDF files/
+Convenience tools for accessing FVCOM NetCDF files
 }
