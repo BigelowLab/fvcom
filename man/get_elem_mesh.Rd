@@ -2,23 +2,23 @@
 % Please edit documentation in R/extract.R
 \name{get_elem_mesh}
 \alias{get_elem_mesh}
-\title{Retrieve the node-based mesh with assigned values}
+\title{Retrieve the element-based polygon mesh with assigned values}
 \usage{
-get_elem_mesh(x, vars = c("u", "v"), mesh = get_elem_mesh_geometry(x),
-  ...)
+get_elem_mesh(x, vars = c("u", "v"), mesh = get_elem_mesh_geometry(x,
+  ordered = FALSE), ...)
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}
 
-\item{vars}{character name of the variable}
+\item{vars}{character one or more variable names}
 
 \item{mesh}{the mesh geometry}
 
-\item{...}{further arguments for selecting \code{get_node_var}}
+\item{...}{further arguments (ignored)}
 }
 \value{
-sf object with mesh geometry and the var
+sf object with mesh geometry and the variables
 }
 \description{
-Retrieve the node-based mesh with assigned values
+Retrieve the element-based polygon mesh with assigned values
 }

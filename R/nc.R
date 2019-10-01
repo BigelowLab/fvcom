@@ -254,7 +254,21 @@ fvcom_crs <- function(what = "lonlat"){
                        "+init=epsg:4326")
 }
 
-#' Get the variable for a set of nodes.  This is a convenience
+#' Get variables for nodes or elements.
+#'
+#' @export
+#' @param x FVCOM ncdf4 object
+#' @param where character - either 'node' or 'elem'
+#' @param ... further arguments for \code{\link{get_node_var}} or \code{\link{get_elem_var}}
+#' @return tibble - see \code{\link{get_node_var}} or \code{\link{get_elem_var}}
+get_var <- function(x, where = c("nodes", "elems"), ...){
+  switch(tolower(where[1]),
+    'elems' = get_elem_var(x, ...),
+              get_node_var(x, ...)
+  )
+}
+
+#' Get variables for a set of nodes.  This is a convenience
 #' function that provides a means for getting a vector of values at a given
 #' sigma layer (or level) and time.  Note that the dimensions a
 #' variable uses varies - see \code{\link{list_vars}}.
@@ -269,7 +283,7 @@ fvcom_crs <- function(what = "lonlat"){
 #' @param time either a single 1-based integer of POSIXct
 #' @param y_transform logical, if convert y from sigma to integer?
 #'    Note that time is auto-converted
-#' @return vector of values - one for each node
+#' @return tibble of node id and values - one row for each node
 get_node_var <- function(x, var = 'zeta',
                     node = seq_len(fvcom_count(x, "nodes")),
                     y = 1,
@@ -277,6 +291,15 @@ get_node_var <- function(x, var = 'zeta',
                     y_transform = FALSE){
 
   if (!is_ncdf4(x)) stop("input must be ncdf4 class object")
+
+  if (length(var) > 1){
+    vv <- lapply(var,
+      function(v){
+        get_node_var(x, var = v, node = node, y = y, time = time, y_transform = y_transform)
+      })
+    r <- Reduce(function(a,b) dplyr::left_join(a, b, by = "node"), vv)
+    return(r)
+  }
 
   v <- list_vars(x, collapse = FALSE) %>%
       dplyr::filter(.data$name == var[1])
@@ -315,6 +338,79 @@ get_node_var <- function(x, var = 'zeta',
   dplyr::tibble(node,
                 !!var := ncdf4::ncvar_get(x, var, start = start, count = count))
 }
+
+
+#' Get variables for a set of elements.  This is a convenience
+#' function that provides a means for getting a vector of values at a given
+#' sigma layer (or level) and time.  Note that the dimensions a
+#' variable uses varies - see \code{\link{list_vars}}.
+#'
+#' @export
+#' @param x FVCOM ncdf4 object
+#' @param var charcater the name of the variable.  Not all variables are handled
+#'   by this function.
+#' @param elem integer one or more 1-based node ID(s).  These must form
+#'   a contiguous sequence of elems identifers
+#' @param y integer a single 1-based index into siglay, or sigelev
+#' @param time either a single 1-based integer of POSIXct
+#' @param y_transform logical, if convert y from sigma to integer?
+#'    Note that time is auto-converted
+#' @return tibble of element id and values - one row for each node
+get_elem_var <- function(x, var = c("u", "v"),
+                    elem = seq_len(fvcom_count(x, "elems")),
+                    y = 1,
+                    time = 1,
+                    y_transform = FALSE){
+
+  if (!is_ncdf4(x)) stop("input must be ncdf4 class object")
+
+  if (length(var) > 1){
+    vv <- lapply(var,
+      function(v){
+        get_elem_var(x, var = v, elem = elem, y = y, time = time, y_transform = y_transform)
+      })
+    r <- Reduce(function(a,b) dplyr::left_join(a, b, by = "elem"), vv)
+    return(r)
+  }
+
+  v <- list_vars(x, collapse = FALSE) %>%
+      dplyr::filter(.data$name == var[1])
+  if (nrow(v) == 0) stop("variable not found:", var[1])
+  if (inherits(time, 'POSIXct')) time <- time_index(x, time)
+  if (y_transform) y <- sigma_index(x, y, what = v$name[1][2])
+
+  start <- elem[1]
+  count <- length(elem)
+  if (length(v$dims[[1]]) == 1) stop("1-d vars recognized are not recognized")
+  if (length(v$dims[[1]]) >= 2){
+    d2 <- v$dims[[1]][2]
+    if (d2 == "time"){
+      start <- c(start, time[1])
+      count <- c(count, 1)
+    } else if (d2 =="siglev" || d2 == "siglay"){
+      start <- c(start, y[1])
+      count <- c(count, 1)
+    } else {
+      stop("use another means to access var:", var)
+    }
+  }
+  if (length(v$dims[[1]]) == 3){
+    d3 <- v$dims[[1]][2]
+    if (d3 == "time"){
+      start <- c(start, time[1])
+      count <- c(count, 1)
+    } else if (d3 =="siglev" || d3 == "siglay"){
+      start <- c(start, y[1])
+      count <- c(count, 1)
+    } else {
+      stop("use another means to access var:", var)
+    }
+  }
+
+  dplyr::tibble(elem,
+                !!var := ncdf4::ncvar_get(x, var, start = start, count = count))
+}
+
 
 #' Convert a time to a time-index
 #'

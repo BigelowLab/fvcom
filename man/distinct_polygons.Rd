@@ -5,12 +5,14 @@
 \title{Compute a table of distinct polygons (triangles) by listing the
 nodes (or elements).}
 \usage{
-distinct_polygons(x, where = c("nodes", "elems")[1])
+distinct_polygons(x, where = c("nodes", "elems")[1], ordered = FALSE)
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}
 
 \item{where}{character, either 'nodes' or "elems"}
+
+\item{ordered}{logical if TRUE then order the polygons by node id (low to high)}
 }
 \value{
 ordered tibble of p1, p2, and p3

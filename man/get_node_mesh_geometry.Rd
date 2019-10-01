@@ -4,12 +4,14 @@
 \alias{get_node_mesh_geometry}
 \title{Compute the mesh (polygons) for nodes}
 \usage{
-get_node_mesh_geometry(x, what = "lonlat")
+get_node_mesh_geometry(x, what = "lonlat", ...)
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}
 
 \item{what}{character either 'lonlat' or 'xy'}
+
+\item{...}{further arguments for \code{\link{distinct_polygons}}}
 }
 \value{
 sf collection of POLYGON with the following variable
