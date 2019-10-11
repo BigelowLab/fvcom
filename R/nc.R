@@ -254,18 +254,28 @@ fvcom_crs <- function(what = "lonlat"){
                        "+init=epsg:4326")
 }
 
-#' Get variables for nodes or elements.
+#' Get variables for nodes or elements.  It is not possible to get a mix of
+#' variables - that is some from nodes and some from elements - in one call.
 #'
 #' @export
 #' @param x FVCOM ncdf4 object
-#' @param where character - either 'node' or 'elem'
+#' @param vars character - one or more variables
+#' @param lut a table of variable descriptions - see \code{\link{list_vars}}
 #' @param ... further arguments for \code{\link{get_node_var}} or \code{\link{get_elem_var}}
-#' @return tibble - see \code{\link{get_node_var}} or \code{\link{get_elem_var}}
-get_var <- function(x, where = c("nodes", "elems"), ...){
-  switch(tolower(where[1]),
-    'elems' = get_elem_var(x, ...),
-              get_node_var(x, ...)
-  )
+#' @return list of variables - see \code{\link{get_node_var}} or \code{\link{get_elem_var}}
+get_vars <- function(x,
+                    vars = c("u", "v"),
+                    lut = list_vars(x),
+                    ...){
+  lapply(vars,
+    function(var){
+      z <- lut %>%
+        dplyr::filter(.data$name == var)
+      switch(tolower(z$dim1[1]),
+        'nele' = get_elem_var(x, ...),
+        'node' = get_node_var(x, ...),
+        stop("variable is not defined at nodes or elements:", var))
+    })
 }
 
 #' Get variables for a set of nodes.  This is a convenience
@@ -301,17 +311,18 @@ get_node_var <- function(x, var = 'zeta',
     return(r)
   }
 
-  v <- list_vars(x, collapse = FALSE) %>%
+  v <- list_vars(x) %>%
       dplyr::filter(.data$name == var[1])
   if (nrow(v) == 0) stop("variable not found:", var[1])
+  if (v$dim1 != "node") stop("variable must have node as first dimension")
   if (inherits(time, 'POSIXct')) time <- time_index(x, time)
   if (y_transform) y <- sigma_index(x, y, what = v$name[1][2])
 
   start <- node[1]
   count <- length(node)
-  if (length(v$dims[[1]]) == 1) stop("1-d vars recognized are not recognized")
-  if (length(v$dims[[1]]) >= 2){
-    d2 <- v$dims[[1]][2]
+  dims <- strsplit(v$dims[[1]], ",", fixed = TRUE)[[1]]
+  if (length(dims) >= 2){
+    d2 <- dims[2]
     if (d2 == "time"){
       start <- c(start, time[1])
       count <- c(count, 1)
@@ -322,8 +333,8 @@ get_node_var <- function(x, var = 'zeta',
       stop("use another means to access var:", var)
     }
   }
-  if (length(v$dims[[1]]) == 3){
-    d3 <- v$dims[[1]][2]
+  if (length(dims) >= 3){
+    d3 <- dims[3]
     if (d3 == "time"){
       start <- c(start, time[1])
       count <- c(count, 1)
@@ -373,17 +384,18 @@ get_elem_var <- function(x, var = c("u", "v"),
     return(r)
   }
 
-  v <- list_vars(x, collapse = FALSE) %>%
+  v <- list_vars(x) %>%
       dplyr::filter(.data$name == var[1])
   if (nrow(v) == 0) stop("variable not found:", var[1])
+  if (v$dim1[1] != "nele") stop("variable must have nele as first dimension")
   if (inherits(time, 'POSIXct')) time <- time_index(x, time)
   if (y_transform) y <- sigma_index(x, y, what = v$name[1][2])
 
   start <- elem[1]
   count <- length(elem)
-  if (length(v$dims[[1]]) == 1) stop("1-d vars recognized are not recognized")
-  if (length(v$dims[[1]]) >= 2){
-    d2 <- v$dims[[1]][2]
+  dims <- strsplit(v$dims[[1]], ",", fixed = TRUE)[[1]]
+  if (length(dims) >= 2){
+    d2 <- dims[2]
     if (d2 == "time"){
       start <- c(start, time[1])
       count <- c(count, 1)
@@ -394,8 +406,8 @@ get_elem_var <- function(x, var = c("u", "v"),
       stop("use another means to access var:", var)
     }
   }
-  if (length(v$dims[[1]]) == 3){
-    d3 <- v$dims[[1]][2]
+  if (length(dims) >= 3){
+    d3 <- dims[3]
     if (d3 == "time"){
       start <- c(start, time[1])
       count <- c(count, 1)
@@ -447,14 +459,29 @@ sigma_index <- function(x,
 #'
 #' @export
 #' @param x FVCOM ncdf4 object
-#' @param collapse logical, if TRUE collapse the dim names into a single character
 #' @return handy tibble
-list_vars <- function(x, collapse = TRUE){
+list_vars <- function(x){
   vars <- names(x$var)
-  dims <- lapply(vars,
+  Dims <- lapply(vars,
                  function(v){
                    sapply(x$var[[v]]$dim, '[[', 'name')
                  })
-  if (collapse) dims <- unlist(sapply(dims, paste, collapse = ","))
-  dplyr::tibble(name = vars, dims)
+  getdim <- function(dims, n = 1){
+        sapply(dims,
+            function(d){
+              if (inherits(d, "character")) {
+                r <- ifelse(length(d) >= n, d[[n]], "")
+              } else {
+                r <- ""
+              }
+              r
+              })
+  }
+  dplyr::tibble(name = vars,
+                dims = unlist(sapply(Dims, paste, collapse = ",")),
+                dim1 = getdim(Dims, 1),
+                dim2 = getdim(Dims, 2),
+                dim3 = getdim(Dims, 3),
+                units = sapply(vars, function(v) x$var[[v]]$units ),
+                longname = sapply(vars, function(v) x$var[[v]]$longname) )
 }

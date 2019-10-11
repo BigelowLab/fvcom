@@ -4,12 +4,10 @@
 \alias{list_vars}
 \title{Generate a listing of variables and dimensions}
 \usage{
-list_vars(x, collapse = TRUE)
+list_vars(x)
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}
-
-\item{collapse}{logical, if TRUE collapse the dim names into a single character}
 }
 \value{
 handy tibble

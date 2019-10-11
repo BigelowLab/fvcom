@@ -4,12 +4,17 @@
 \alias{get_mesh}
 \title{Retrieve node or element based polygon mesh}
 \usage{
-get_mesh(x, where = c("nodes", "elems")[1], ...)
+get_mesh(x, vars = c("zeta", "u", "v"), lut = list_vars(x),
+  mesh = get_elem_mesh_geometry(x, ordered = FALSE), ...)
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}
 
-\item{where}{character either 'nodes' or 'elems'}
+\item{vars}{character one or more variable names to retrieve}
+
+\item{lut}{a table of variable descriptions - see \code{\link{list_vars}}}
+
+\item{mesh}{the mesh geometry}
 
 \item{...}{further arguments for \code{\link{get_node_mesh}} or \code{\link{get_elem_mesh}}}
 }

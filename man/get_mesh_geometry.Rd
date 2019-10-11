@@ -4,12 +4,12 @@
 \alias{get_mesh_geometry}
 \title{Compute mesh (polygons) for nodes or elements}
 \usage{
-get_mesh_geometry(x, where = c("nodes", "elems"), ...)
+get_mesh_geometry(x, where = c("nodes", "elems")[2], ...)
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}
 
-\item{where}{character, either 'nodes' or "elems"}
+\item{where}{character, either "nodes" or "elems" (default)}
 
 \item{...}{further arguments for \code{\link{get_elem_mesh_geometry}} or \code{\link{get_node_mesh_geometry}}}
 }

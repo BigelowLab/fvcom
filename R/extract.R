@@ -2,16 +2,27 @@
 #'
 #' @export
 #' @param x FVCOM ncdf4 object
-#' @param where character either 'nodes' or 'elems'
+#' @param vars character one or more variable names to retrieve
+#' @param lut a table of variable descriptions - see \code{\link{list_vars}}
+#' @param mesh the mesh geometry
 #' @param ... further arguments for \code{\link{get_node_mesh}} or \code{\link{get_elem_mesh}}
 #' @return sf object with mesh geometry and the variables
 get_mesh <- function(x,
-                     where = c("nodes", "elems")[1],
+                     vars = c("zeta", "u", "v"),
+                     lut = list_vars(x),
+                     mesh = get_elem_mesh_geometry(x, ordered = FALSE),
                      ...){
 
-  switch(tolower(where[1]),
-    'elems' = get_elem_mesh(x, ...),
-              get_node_mesh(x, ...))
+  for (var in rev(vars)){
+    z <- lut %>%
+      dplyr::filter(.data$name == var)
+
+    mesh <- switch(tolower(z$dim1[1]),
+      'nele' = get_elem_mesh(x, vars = var, mesh = mesh, ...),
+      'node' = get_node_mesh(x, vars = var, mesh = mesh, ...),
+      stop("variable is not defined at nodes or elements: ", var))
+  }
+  mesh
 }
 
 #' Retrieve the node-based mesh with assigned values
@@ -72,16 +83,19 @@ get_elem_mesh <- function(x,
 #'
 #' @export
 #' @param x FVCOM ncdf4 object
-#' @param where character, either 'nodes' or "elems"
+#' @param where character, either "nodes" or "elems" (default)
 #' @param ... further arguments for \code{\link{get_elem_mesh_geometry}} or \code{\link{get_node_mesh_geometry}}
 #' @return sf collection of POLYGON with the following variable
 #' \itemize{
 #'   \item{p1, p2, p3 the point identifiers for the three points defining the polygon}
 #'   \item{geometry 4 point polygon (closed so first and last the same)}
 #' }
-get_mesh_geometry <- function(x, where = c("nodes", "elems"), ...){
+get_mesh_geometry <- function(x,
+                              where = c("nodes", "elems")[2],
+                              ...){
   switch(tolower(where[1]),
     "elems" = get_elem_mesh_geometry(x, ...),
+    "elem"  = get_elem_mesh_geometry(x, ...),
               get_node_mesh_geometry(x, ...))
 
 }
@@ -99,15 +113,17 @@ get_mesh_geometry <- function(x, where = c("nodes", "elems"), ...){
 #' }
 get_elem_mesh_geometry <- function(x, what = 'lonlat', ...){
 
+  # nodes around each element
+  # make a matrix, and then wrap
   p <- distinct_polygons(x, where = 'elems', ...)
   m <- as.matrix(p)
   m <- cbind(m, m[,1])
-  elems <- fvcom_elems(x, form = 'table', what = what)
-  xy <- elems %>%
-    dplyr::select(-.data$elem) %>%
+  nodes <- fvcom_nodes(x, form = 'table', what = what)
+  xy <- nodes %>%
+    dplyr::select(-.data$node) %>%
     as.matrix()
   nm <- colnames(xy)
-  g <- lapply(seq_len(nrow(p)),
+  g <- lapply(seq_len(nrow(m)),
     function(i){
       sf::st_polygon(list(xy[m[i,],]))
     })
@@ -179,12 +195,12 @@ distinct_polygons <- function(x,
     # join them, sort by node number (across rows)
     ns <- do.call(rbind, ns)
     ns <- t(apply(ns, 1, sort))
-    # convert to tibble and arrange by column
+    # convert to tibble
     # retain only the unique ones
     colnames(ns) <- paste0("p", 1:3)
     r <- dplyr::as_tibble(ns) %>% dplyr::distinct_all()
   } else {
-    nv <- t(apply(ncdf4::ncvar_get(x, "nv"), 1, sort))
+    nv <- ncdf4::ncvar_get(x, "nv")
     colnames(nv) <- paste0("p", 1:3)
     r <- dplyr::as_tibble(nv)
   }
