@@ -12,7 +12,8 @@ Imports:
     tibble,
     dplyr,
     raster,
-    sf
+    sf,
+    fasterize
 Maintainer: Ben Tupper <btupper@bigelow.org>
 Author: Ben Tupper <btupper@bigelow.org>
 URL: https://github.com/BigelowLab/fvcom

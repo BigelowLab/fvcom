@@ -15,7 +15,7 @@ where = 'elems'
 
 #npts = fvcom_nodes(x, form = 'sf', what = 'xy')
 epts = fvcom::fvcom_elems(x, form = 'sf', what = what)
-mesh <- emesh <- fvcom::get_elem_mesh_geometry(x, what = what)
+mesh <- emesh <- fvcom::get_mesh(x, vars = c("u", "v"), what = what)
 #nmesh = get_node_mesh_geometry(x, what = 'lonlat')
 
 leaflet(mesh) %>%
