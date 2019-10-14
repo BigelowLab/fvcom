@@ -87,7 +87,7 @@ Use the functions `fvcom_nodes` and `fvcom_elems` to extract location informatio
 as either `xy` or `lonlat` pairs.  Note we get both xy and lonlat here for nodes.  The
 same can be had for elements. 
 
-```
+```{r}
 dplyr::left_join(fvcom::fvcom_nodes(x, what = 'lonlat'), 
                  fvcom::fvcom_nodes(x, what = 'xy'), by = "node")
 # Joining, by = "node"
@@ -113,7 +113,7 @@ Retrieving the timestamps provides you with a choice for assumptions you want
 to make about the hourly model output.  Timestamps stored internally do not land
 on each hour.
 
-```
+```{r}
 head(fvcom_time(x, internal = TRUE), n = 6)
 # [1] "2019-01-01 00:00:00 UTC" "2019-01-01 01:01:52 UTC" "2019-01-01 01:58:07 UTC"
 # [4] "2019-01-01 03:00:00 UTC" "2019-01-01 04:01:52 UTC" "2019-01-01 04:58:07 UTC"
@@ -121,7 +121,7 @@ head(fvcom_time(x, internal = TRUE), n = 6)
 
 We can get a proxy for these times, but *prettily* settled on each hour. The choice is yours.
 
-```
+```{r}
 head(fvcom_time(x, internal = FALSE), n = 6)
 # [1] "2019-01-01 00:00:00 UTC" "2019-01-01 01:00:00 UTC" "2019-01-01 02:00:00 UTC"
 # [4] "2019-01-01 03:00:00 UTC" "2019-01-01 04:00:00 UTC" "2019-01-01 05:00:00 UTC"
@@ -132,7 +132,7 @@ head(fvcom_time(x, internal = FALSE), n = 6)
 Variables (the oceanographic ones) can be extract by node or element. It is possible to
 select a subset, but the operation on the whole dataset is quick and it is just as easy to subset after you have the table in hand.
 
-```
+```{r}
 # v <- get_node_var <- function(x, var = 'zeta')
 # # A tibble: 53,087 x 2
 #     node      zeta
@@ -156,7 +156,7 @@ Some computation is required (not a lot) to produce the mesh which is comprised 
 
 The each element in the mesh is defined by the three nodes identified by index, "p1", "p2" and "p3".  The geometry is defined by either "lonlat" coordinates or projected mercator coordinates, "xy".
 
-```
+```{r}
 mesh <- get_mesh_geometry(x, what = 'lonlat')
 # Simple feature collection with 99074 features and 3 fields
 # geometry type:  POLYGON
@@ -184,7 +184,7 @@ plot(sf::st_geometry(mesh))
 ![The bare mesh geometry](inst/mesh.png)
 We can assign variable values to the polygons by reusing the mesh table.  These variables are associated with either node or elements. If node-referenced variables are requested the mean of three neighboring nodes (which define an element) is computed.  Where element-referenced variables are requested no averaging is done - the values are simply assigned to the mesh element.
 
-```
+```{r}
 # mesh <- get_mesh(x, vars = c("zeta", "u", "v"), mesh = mesh)
 # Simple feature collection with 99137 features and 6 fields
 # geometry type:  POLYGON
@@ -209,3 +209,13 @@ We can assign variable values to the polygons by reusing the mesh table.  These 
 plot(mesh[c("u", "v")], lty = 'blank', main = c("u", "v"))
 ```
 ![The bare mesh geometry with interpolated variables](inst/uv.png)
+
+### Rasterize
+
+The mesh canbe interpolated on to a regular grid ("rasterize").
+
+```{r}
+uv <- raster::stack(sapply(c("u", "v"), function(f) rasterize(mesh, field = f), simplify = FALSE))
+rasterVis::vectorplot(uv, isField = TRUE, main = 'Surface Currents')
+```
+![Rasterized meshes](inst/surface_currents.png)
