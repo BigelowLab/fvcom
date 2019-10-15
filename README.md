@@ -5,7 +5,7 @@ Convenience accessing FVCOM datasets.
 ### Background
 
 [FVCOM](http://fvcom.smast.umassd.edu/fvcom/) produces ocean circulation models
-on an irregular mesh. Here is the [user manual](http://fvcom.smast.umassd.edu/wp-content/uploads/2013/11/MITSG_12-25.pdf) which looks like a good cure for being bored!
+on an irregular mesh. Here is the [user manual](http://fvcom.smast.umassd.edu/wp-content/uploads/2013/11/MITSG_12-25.pdf).
 
 As an example, [NECOFS](http://fvcom.smast.umassd.edu/necofs/) leverages this mesh
 to deliver models for the Gulf of Maine, Mass coastal waters and a small number
@@ -21,14 +21,20 @@ There are a number of models with a Gulf of Maine bend including
 
 ### Requirements
 
++ [R 3+](https://www.r-project.org/)
 + [ncdf4](https://cran.r-project.org/package=ncfd4)
-
++ [rlang](https://cran.r-project.org/package=rlang)
++ [dplyr](https://cran.r-project.org/package=dplyr)
++ [tibble](https://cran.r-project.org/package=tibble)
++ [sf](https://cran.r-project.org/package=sf)
++ [raster](https://cran.r-project.org/package=raster)
++ [fasterize](https://cran.r-project.org/package=fasterize)
 
 ### Installation
 
 ```
 devtools::install_github("BigelowLab/fvcom")
-````
+```
 
 
 ## Data Access
@@ -38,10 +44,9 @@ THREDDS servers blend a simple user-navigable interface (similar to a file brows
 with a machine readable data [XML map](http://www.smast.umassd.edu:8080/thredds/catalog.xml)
 Note the change in the file extension.  Files served this way permit the user to
 treat the product as if it were a local file, allowing selective downlaod and
-access in a familar NetCDF format with needing to downlaod the entire file.
+access in a familar NetCDF format with needing to download the entire file.
 
-NECOFS has it's own [THREDDS directory](http://www.smast.umassd.edu:8080/thredds/catalog/models/fvcom/NECOFS/catalog.html)
-including a subdirectory for the GoM FVCOM models.
+NECOFS has it's own [THREDDS directory](http://www.smast.umassd.edu:8080/thredds/catalog/models/fvcom/NECOFS/catalog.html) including a subdirectory for the GoM FVCOM models.
 
 
 ## Accessing FVCOM data
@@ -55,7 +60,7 @@ uri_base <- "http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/
 uri <- file.path(uri_base, "gom4_201901.nc")
 x <- nc_open(uri)
 x
-#      ...blah...
+#      ...
 #      53 variables (excluding dimension variables):
 #         ...blah...
 #         float lon[node]   
@@ -72,7 +77,7 @@ x
 #         float yc[nele]   
 #             long_name: zonal y-coordinate
 #             units: meters
-#         ...blah...
+#         ...
 ```
 
 ### Nodes and Elements
