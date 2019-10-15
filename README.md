@@ -1,6 +1,6 @@
 # fvcom
 
-Convenience accessing FVCOM datasets.
+Convenient access to [FVCOM](http://fvcom.smast.umassd.edu/fvcom/) datasets.
 
 ### Background
 
