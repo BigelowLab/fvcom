@@ -56,7 +56,7 @@ Open the FVCOM resource as you would any NetCDF file.
 ```{r}
 library(fvcom)
 library(ncdf4)
-uri_base <- "http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Archive/NECOFS_GOM/2019/"
+uri_base <- "http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Archive/NECOFS_GOM/2019"
 uri <- file.path(uri_base, "gom4_201901.nc")
 x <- nc_open(uri)
 x
@@ -138,7 +138,7 @@ Variables (the oceanographic ones) can be extract by node or element. It is poss
 select a subset, but the operation on the whole dataset is quick and it is just as easy to subset after you have the table in hand.
 
 ```{r}
-# v <- get_node_var <- function(x, var = 'zeta')
+# v <- get_node_var(x, var = 'zeta')
 # # A tibble: 53,087 x 2
 #     node      zeta
 #    <int>     <dbl>
@@ -217,10 +217,10 @@ plot(mesh[c("u", "v")], lty = 'blank', main = c("u", "v"))
 
 ### Rasterize
 
-The mesh canbe interpolated on to a regular grid ("rasterize").
+The mesh can be interpolated on to a regular grid ("rasterize").
 
 ```{r}
-uv <- raster::stack(sapply(c("u", "v"), function(f) rasterize(mesh, field = f), simplify = FALSE))
+uv <- raster::stack(sapply(c("u", "v"), function(f) fvcom::rasterize(mesh, field = f), simplify = FALSE))
 rasterVis::vectorplot(uv, isField = TRUE, main = 'Surface Currents')
 ```
 ![Rasterized meshes](inst/surface_currents.png)

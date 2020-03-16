@@ -9,7 +9,7 @@ rasterize(x, template = default_template(x), ...)
 \arguments{
 \item{x}{the mesh as `sf`` POLYGON}
 
-\item{template}{a raster template}
+\item{template}{a raster template see \code{\link{default_template}} and \code{\link{mur_template}}}
 
 \item{...}{further arguments for \code{\link[fasterize]{fasterize}}}
 }
