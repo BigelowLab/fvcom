@@ -9,7 +9,7 @@ library(leaflet)
 
 
 setwd("/mnt/ecocast/corecode/R/necofs")
-uri <- "http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Archive/NECOFS_GOM/2019//gom4_201901.nc"
+uri <- "http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Archive/NECOFS_GOM/2019/gom4_201901.nc"
 x <- nc_open(uri)
 
 what = 'lonlat'

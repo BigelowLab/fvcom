@@ -45,13 +45,21 @@ get_node_mesh <- function(x,
                    sf::st_set_geometry(NULL) %>%
                    dplyr::select(.data$p1, .data$p2, .data$p3))
   for (var in vars){
-    mesh <- mesh %>%
-      tibble::add_column(!!var :=
-                    sapply(seq_len(nrow(mesh)),
-                           function(i){
-                             fun((v %>%
-                                   dplyr::slice(m[i,]))[[var]], na.rm = na.rm)
-                           }), .before = "p1")
+    if (var %in% names(mesh)){
+      mesh[[var]] <- sapply(seq_len(nrow(mesh)),
+                               function(i){
+                                 fun((v %>%
+                                        dplyr::slice(m[i,]))[[var]], na.rm = na.rm)
+                               })
+    } else {
+      mesh <- mesh %>%
+        tibble::add_column(!!var :=
+                      sapply(seq_len(nrow(mesh)),
+                             function(i){
+                               fun((v %>%
+                                     dplyr::slice(m[i,]))[[var]], na.rm = na.rm)
+                             }), .before = "p1")
+    }
   }
   mesh
 }
@@ -62,18 +70,22 @@ get_node_mesh <- function(x,
 #' @param x FVCOM ncdf4 object
 #' @param vars character one or more variable names
 #' @param mesh the mesh geometry
-#' @param ... further arguments (ignored)
+#' @param ... further arguments for \code{\link{get_elem_var}}
 #' @return sf object with mesh geometry and the variables
 get_elem_mesh <- function(x,
                           vars = c("u", "v"),
                           mesh = get_elem_mesh_geometry(x, ordered = FALSE),
                           ...){
 
-  v <- get_elem_var(x, vars) %>%
+  v <- get_elem_var(x, vars, ...) %>%
     dplyr::select(-.data$elem)
   for (var in vars){
-    mesh <- mesh %>%
-      tibble::add_column(!!var := v[[var]], .before = "p1")
+    if (var %in% names(mesh)){
+      mesh[[var]] <- v[[var]]
+    } else {
+      mesh <- mesh %>%
+        tibble::add_column(!!var := v[[var]], .before = "p1")
+    }
   }
   mesh
 }

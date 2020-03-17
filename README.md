@@ -187,6 +187,9 @@ mesh <- get_mesh_geometry(x, what = 'lonlat')
 plot(sf::st_geometry(mesh))
 ```
 ![The bare mesh geometry](inst/mesh.png)
+
+### Mesh with variables
+
 We can assign variable values to the polygons by reusing the mesh table.  These variables are associated with either node or elements. If node-referenced variables are requested the mean of three neighboring nodes (which define an element) is computed.  Where element-referenced variables are requested no averaging is done - the values are simply assigned to the mesh element.
 
 ```{r}
@@ -214,6 +217,36 @@ We can assign variable values to the polygons by reusing the mesh table.  These 
 plot(mesh[c("u", "v")], lty = 'blank', main = c("u", "v"))
 ```
 ![The bare mesh geometry with interpolated variables](inst/uv.png)
+
+
+You can request variables at various dimensions such as times and sigma levels/layers - the default is the first of each dimension.  While you can request one of these in 'real' values (such as `POSIXct` time), you can also provide a 1-based index into that dimension.  The example below requests the same variables as above but at the 24th time interval. See the functions `get_node_var` and `get_elem_var` for details.
+
+```
+mesh <- get_mesh(x, vars = c("zeta", "u", "v"), mesh = mesh, time = 24)
+# Simple feature collection with 99137 features and 6 fields
+# geometry type:  POLYGON
+# dimension:      XY
+# bbox:           xmin: -75.68433 ymin: 35.27653 xmax: -56.85079 ymax: 46.14595
+# epsg (SRID):    4326
+# proj4string:    +proj=longlat +datum=WGS84 +no_defs
+# # A tibble: 99,137 x 7
+#         v      u  zeta    p1    p2    p3                                             geometry
+#     <dbl>  <dbl> <dbl> <int> <int> <int>                                        <POLYGON [°]>
+#  1 0.148  0.122  0.451    96     1    95 ((-59.8902 46.09441, -59.81069 46.14595, -59.82597 …
+#  2 0.313  0.0446 0.435    95     1     2 ((-59.82597 46.0583, -59.81069 46.14595, -59.75268 …
+#  3 0.191  0.0131 0.409     3    95     2 ((-59.70132 46.03855, -59.82597 46.0583, -59.75268 …
+#  4 0.105  0.0295 0.400    95     3    97 ((-59.82597 46.0583, -59.70132 46.03855, -59.78879 …
+#  5 0.150  0.116  0.382    97     3    98 ((-59.78879 46.00403, -59.70132 46.03855, -59.72971…
+#  6 0.101  0.0564 0.375     4    98     3 ((-59.63753 45.97571, -59.72971 45.94034, -59.70132…
+#  7 0.143  0.144  0.377     4    99    98 ((-59.63753 45.97571, -59.65802 45.86837, -59.72971…
+#  8 0.0536 0.0679 0.371    99     4     5 ((-59.65802 45.86837, -59.63753 45.97571, -59.56369…
+#  9 0.157  0.119  0.373   100    99     5 ((-59.59155 45.78925, -59.65802 45.86837, -59.56369…
+# 10 0.0470 0.0627 0.366     5     6   100 ((-59.56369 45.90162, -59.48375 45.8194, -59.59155 …
+# # … with 99,127 more rows
+plot(mesh[c("u", "v")], lty = 'blank', main = c("u", "v"))
+```
+![The bare mesh geometry with interpolated variables at 24h](inst/uv-24.png)
+
 
 ### Rasterize
 

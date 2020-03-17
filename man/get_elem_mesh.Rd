@@ -14,7 +14,7 @@ get_elem_mesh(x, vars = c("u", "v"), mesh = get_elem_mesh_geometry(x,
 
 \item{mesh}{the mesh geometry}
 
-\item{...}{further arguments (ignored)}
+\item{...}{further arguments for \code{\link{get_elem_var}}}
 }
 \value{
 sf object with mesh geometry and the variables
