@@ -302,8 +302,8 @@ The mesh can be interpolated on to a regular grid (“rasterize”).
         }, simplify = FALSE))
     rasterVis::vectorplot(uv, isField = 'dXY', 
                           col.arrows = "white", 
-                          main = 'Surface Currents')
-
+                         main = 'Surface Currents')
+```
 ![Rasterized meshes](inst/surface_currents.png)
 
 ### More on Gulf of Maine 3d nesting model data
