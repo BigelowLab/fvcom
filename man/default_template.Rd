@@ -4,8 +4,7 @@
 \alias{default_template}
 \title{Retrieve a raster template that covers the provided mesh}
 \usage{
-default_template(x, res = c(0.01, 0.01), crs = sf::st_crs(x)[["epsg"]],
-  ...)
+default_template(x, res = c(0.01, 0.01), crs = sf::st_crs(x)[["epsg"]], ...)
 }
 \arguments{
 \item{x}{the mesh geometry}

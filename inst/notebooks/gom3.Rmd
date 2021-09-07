@@ -1,0 +1,60 @@
+---
+title: "FVCOM - GOM3"
+output: github_document
+---
+
+ + title: GOM3 Nesting  by Yf.Sun@umassd.edu
+ + institution: School for Marine Science and Technology
+ + source: FVCOM_3.0
+ + history: model started at: 22/12/2011   16:41
+ + references: http://fvcom.smast.umassd.edu, http://codfish.smast.umassd.edu
+
+
+Set up what you need.
+
+```{r, message=FALSE}
+library(sf)
+library(fvcom)
+library(ncdf4)
+library(dplyr)
+library(kableExtra)
+```
+
+
+Open the connection.
+```{r open}
+uri <- "http://www.smast.umassd.edu:8080/thredds/dodsC/fvcom/hindcasts/30yr_gom3"
+x <- ncdf4::nc_open(uri)
+```
+
+What is in it?
+```{r list_vars}
+vars <- fvcom::list_vars(x)
+vars %>%
+  kableExtra::kbl(caption = "The complete list of variables and dependencies") %>%
+  kableExtra::kable_classic(full_width = F, html_font = "Cambria")
+```
+
+Geometry locations can be retrieved at `nodes` or `elements`.
+
+```{r elems}
+epts = fvcom::fvcom_elems(x)
+epts
+```
+
+You can also collect the neighboring indices for elements and/or nodes.  These are returned as matrices that have the indices of each neighboring element or node. Below we show what is returned when you include neighboring elements. We use `str()` below because Rmarkdown doesn't know how to print a tibble with a matrix column.
+
+```{r elems_with_neighbors, echo=TRUE}
+epts = fvcom::fvcom_elems(x, include = "nbe")
+str(epts)
+```
+
+
+Don't forget to tidy up when you are done!
+
+```{r wrap_it_up}
+ncdf4::nc_close(x)
+```
+
+
+

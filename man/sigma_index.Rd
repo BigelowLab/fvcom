@@ -4,8 +4,7 @@
 \alias{sigma_index}
 \title{Convert a time to a sigma level or sigma layer}
 \usage{
-sigma_index(x, sigma = seq(-1, 0, by = 0.1), what = c("siglev",
-  "siglay"))
+sigma_index(x, sigma = seq(-1, 0, by = 0.1), what = c("siglev", "siglay"))
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}

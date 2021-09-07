@@ -4,8 +4,11 @@
 \alias{fvcom_time}
 \title{Get the time dimension values.}
 \usage{
-fvcom_time(x, origin = as.POSIXct("1858-11-17 00:00:00", tz = "UTC"),
-  internal = FALSE)
+fvcom_time(
+  x,
+  origin = as.POSIXct("1858-11-17 00:00:00", tz = "UTC"),
+  internal = FALSE
+)
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}

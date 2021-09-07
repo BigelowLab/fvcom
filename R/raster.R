@@ -11,7 +11,7 @@
 #' @return a raster layer
 mur_template <- function(x,
                          res = c(0.01, 0.01),
-                         crs = "+proj=longlat +datum=WGS84 +no_defs",
+                         crs = "epsg:4326",
                          bb = c(-75.69, -56.85,  35.27,  46.15),
                          ...){
   if (length(res) < 2) res <- c(res, res)

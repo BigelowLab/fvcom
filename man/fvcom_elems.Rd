@@ -4,8 +4,13 @@
 \alias{fvcom_elems}
 \title{Retrieve element locations}
 \usage{
-fvcom_elems(x, what = c("lonlat", "xy")[1], index = NULL,
-  form = c("table", "sf"), include = NULL)
+fvcom_elems(
+  x,
+  what = c("lonlat", "xy")[1],
+  index = NULL,
+  form = c("table", "sf"),
+  include = "none"
+)
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}
@@ -20,7 +25,8 @@ fvcom_elems(x, what = c("lonlat", "xy")[1], index = NULL,
   can be included, but note that "none" is the same as NULL so nothing gets included.
 \itemize{
   \item{none don't include any extra information  - same as setting to NULL}
-  \item{nbs include a list of the indices of the neighbors}
+  \item{nbs include a list other element-wise information.  If not  `none`` then consider
+        `nv` for indices of neighbor nodes and/or `nbe` for indices of neighbor elements}
 }}
 }
 \value{

@@ -4,8 +4,13 @@
 \alias{get_mesh}
 \title{Retrieve node or element based polygon mesh}
 \usage{
-get_mesh(x, vars = c("zeta", "u", "v"), lut = list_vars(x),
-  mesh = get_elem_mesh_geometry(x, ordered = FALSE), ...)
+get_mesh(
+  x,
+  vars = c("zeta", "u", "v"),
+  lut = list_vars(x),
+  mesh = get_elem_mesh_geometry(x, ordered = FALSE),
+  ...
+)
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}

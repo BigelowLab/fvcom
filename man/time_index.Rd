@@ -4,8 +4,11 @@
 \alias{time_index}
 \title{Convert a time to a time-index}
 \usage{
-time_index(x, time = as.POSIXct(paste(Sys.Date(), "12:00:00"), format =
-  "\%Y-\%m-\%d \%H:\%M:\%S", tz = "UTC"))
+time_index(
+  x,
+  time = as.POSIXct(paste(Sys.Date(), "12:00:00"), format = "\%Y-\%m-\%d \%H:\%M:\%S",
+    tz = "UTC")
+)
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}

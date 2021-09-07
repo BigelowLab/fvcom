@@ -4,8 +4,14 @@
 \alias{get_node_mesh}
 \title{Retrieve the node-based mesh with assigned values}
 \usage{
-get_node_mesh(x, vars = "zeta", mesh = get_node_mesh_geometry(x,
-  ordered = FALSE), fun = mean, na.rm = TRUE, ...)
+get_node_mesh(
+  x,
+  vars = "zeta",
+  mesh = get_node_mesh_geometry(x, ordered = FALSE),
+  fun = mean,
+  na.rm = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}

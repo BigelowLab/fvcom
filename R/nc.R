@@ -135,7 +135,8 @@ fvcom_nodes <- function(x,
 #'   can be included, but note that "none" is the same as NULL so nothing gets included.
 #' \itemize{
 #'   \item{none don't include any extra information  - same as setting to NULL}
-#'   \item{nbs include a list of the indices of the neighbors}
+#'   \item{nbs include a list other element-wise information.  If not  `none`` then consider
+#'         `nv` for indices of neighbor nodes and/or `nbe` for indices of neighbor elements}
 #' }
 #' @return data frame (tibble) of element locations including...
 #' \itemize{
@@ -148,7 +149,7 @@ fvcom_elems <- function(x,
                         what = c("lonlat", "xy")[1],
                         index = NULL,
                         form = c("table", "sf"),
-                        include = NULL){
+                        include = "none"){
 
   if (!is_ncdf4(x)) stop("input must be ncdf4 class object")
 
@@ -162,20 +163,24 @@ fvcom_elems <- function(x,
                                  y = ncdf4::ncvar_get(x, varid = "yc")) %>%
                    dplyr::rename(x = .data$x1) )
 
-  if (inherits(include, "character")){
+  if (inherits(include, "character") && include[1] != "none"){
+
     include <- tolower(include)
-    if ("nbs" %in% include){
-      #int ntve[node]
-      #long_name: #elems surrounding each node
-      #  int nbve[node,maxelem]
-      #long_name: elems surrounding each node
-      ntve   <- ncdf4::ncvar_get(x, "ntve")
-      nbve <- ncdf4::ncvar_get(x, "nbve")
-      nav <- cbind(nbve, ntve)
-      n <- ncol(nav)
-      r <- r %>%
-        tibble::add_column(nbs = apply(nav, 1, function(x) x[1:(x[n])] ), .after = "node")
+
+    do_mutate <- function(r, inc = "foo", x = NULL){
+      r <- try(
+          r %>%
+            dplyr::mutate(!!inc := ncdf4::ncvar_get(x, inc))
+      )
+      if (inherits(r, "try-catch")){
+        print(r)
+        stop("error retrieving:", inc)
+      }
+      r
     }
+
+    for (inc in include) r <- do_mutate(r, inc, x)
+
   }
 
    if (!is.null(index)){
@@ -249,9 +254,14 @@ fvcom_nav <- function(x,
 #'   then 'lonlat' is returned.
 #' @return character CRS
 fvcom_crs <- function(what = "lonlat"){
+
+  # https://spatialreference.org/ref/esri/102284/
+  # nad83:1802 -> epsg::102684 (feet)
+  # nad83:1802 -> epsg::102284 (meters)
+
   crs <- switch(tolower(what[1]),
-                "xy" = "+init=nad83:1802",
-                       "+init=epsg:4326")
+                "xy" = "epsg:102284",
+                       "epsg:4326")
 }
 
 #' Get variables for nodes or elements.  It is not possible to get a mix of

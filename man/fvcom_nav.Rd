@@ -4,8 +4,12 @@
 \alias{fvcom_nav}
 \title{Retrieve the navigation elements, start and count, for extracting slabs of data.}
 \usage{
-fvcom_nav(x, vals = c(0, 1), what = c("siglay", "time", "siglev")[1],
-  indexed = FALSE)
+fvcom_nav(
+  x,
+  vals = c(0, 1),
+  what = c("siglay", "time", "siglev")[1],
+  indexed = FALSE
+)
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}

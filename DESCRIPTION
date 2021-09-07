@@ -19,4 +19,4 @@ Author: Ben Tupper <btupper@bigelow.org>
 URL: https://github.com/BigelowLab/fvcom
 License: MIT + file LICENSE
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1

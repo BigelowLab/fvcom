@@ -7,8 +7,14 @@ function that provides a means for getting a vector of values at a given
 sigma layer (or level) and time.  Note that the dimensions a
 variable uses varies - see \code{\link{list_vars}}.}
 \usage{
-get_node_var(x, var = "zeta", node = seq_len(fvcom_count(x, "nodes")),
-  y = 1, time = 1, y_transform = FALSE)
+get_node_var(
+  x,
+  var = "zeta",
+  node = seq_len(fvcom_count(x, "nodes")),
+  y = 1,
+  time = 1,
+  y_transform = FALSE
+)
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}

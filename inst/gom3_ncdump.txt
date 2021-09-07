@@ -1,0 +1,350 @@
+File http://www.smast.umassd.edu:8080/thredds/dodsC/fvcom/hindcasts/30yr_gom3 (NC_FORMAT_CLASSIC):
+
+     49 variables (excluding dimension variables):
+        int nprocs[]   
+            long_name: number of processors
+        int partition[nele]   
+            long_name: partition
+        float x[node]   
+            long_name: nodal x-coordinate
+            units: meters
+        float y[node]   
+            long_name: nodal y-coordinate
+            units: meters
+        float lon[node]   
+            long_name: nodal longitude
+            standard_name: longitude
+            units: degrees_east
+        float lat[node]   
+            long_name: nodal latitude
+            standard_name: latitude
+            units: degrees_north
+        float xc[nele]   
+            long_name: zonal x-coordinate
+            units: meters
+        float yc[nele]   
+            long_name: zonal y-coordinate
+            units: meters
+        float lonc[nele]   
+            long_name: zonal longitude
+            standard_name: longitude
+            units: degrees_east
+        float latc[nele]   
+            long_name: zonal latitude
+            standard_name: latitude
+            units: degrees_north
+        float h[node]   
+            long_name: Bathymetry
+            standard_name: sea_floor_depth_below_geoid
+            units: m
+            coordinates: lat lon
+            type: data
+            mesh: fvcom_mesh
+            location: node
+        int nv[nele,three]   
+            long_name: nodes surrounding element
+            cf_role: face_node_connectivity
+            start_index: 1
+        int nbe[nele,three]   
+            long_name: elements surrounding each element
+        int ntsn[node]   
+            long_name: #nodes surrounding each node
+        int nbsn[node,maxnode]   
+            long_name: nodes surrounding each node
+        int ntve[node]   
+            long_name: #elems surrounding each node
+        int nbve[node,maxelem]   
+            long_name: elems surrounding each node
+        float a1u[nele,four]   
+            long_name: a1u
+        float a2u[nele,four]   
+            long_name: a2u
+        float aw0[nele,three]   
+            long_name: aw0
+        float awx[nele,three]   
+            long_name: awx
+        float awy[nele,three]   
+            long_name: awy
+        float art2[node]   
+            long_name: Area of elements around a node
+        float art1[node]   
+            long_name: Area of Node-Base Control volume
+        int iint[time]   
+            long_name: internal mode iteration number
+        int Itime[time]   
+            units: days since 1858-11-17 00:00:00
+            format: modified julian day (MJD)
+            time_zone: UTC
+        int Itime2[time]   
+            units: msec since 00:00:00
+            time_zone: UTC
+        char Times[maxStrlen64,time]   
+            time_zone: UTC
+        float zeta[node,time]   
+            long_name: Water Surface Elevation
+            units: meters
+            standard_name: sea_surface_height_above_geoid
+            coordinates: time lat lon
+            type: data
+            mesh: fvcom_mesh
+            location: node
+        char file_date[maxStrlen64,time]   
+            time_zone: UTC
+        float u[nele,siglay,time]   
+            long_name: Eastward Water Velocity
+            units: meters s-1
+            type: data
+            standard_name: eastward_sea_water_velocity
+            coordinates: time siglay latc lonc
+            mesh: fvcom_mesh
+            location: face
+        float v[nele,siglay,time]   
+            long_name: Northward Water Velocity
+            units: meters s-1
+            type: data
+            standard_name: northward_sea_water_velocity
+            coordinates: time siglay latc lonc
+            mesh: fvcom_mesh
+            location: face
+        float omega[node,siglev,time]   
+            long_name: Vertical Sigma Coordinate Velocity
+            units: s-1
+            type: data
+            coordinates: time siglev lat lon
+            mesh: fvcom_mesh
+            location: node
+        float ww[nele,siglay,time]   
+            long_name: Upward Water Velocity
+            units: meters s-1
+            type: data
+            standard_name: upward_sea_water_velocity
+            coordinates: time siglay lat lon
+            mesh: fvcom_mesh
+            location: node
+        float ua[nele,time]   
+            long_name: Vertically Averaged x-velocity
+            units: meters s-1
+            type: data
+            standard_name: barotropic_eastward_sea_water_velocity
+            coordinates: time latc lonc
+            mesh: fvcom_mesh
+            location: face
+        float va[nele,time]   
+            long_name: Vertically Averaged y-velocity
+            units: meters s-1
+            type: data
+            standard_name: barotropic_northward_sea_water_velocity
+            coordinates: time latc lonc
+            mesh: fvcom_mesh
+            location: face
+        float temp[node,siglay,time]   
+            long_name: temperature
+            standard_name: sea_water_temperature
+            units: degrees_C
+            coordinates: time siglay lat lon
+            type: data
+            mesh: fvcom_mesh
+            location: node
+        float salinity[node,siglay,time]   
+            long_name: salinity
+            standard_name: sea_water_salinity
+            units: 1e-3
+            coordinates: time siglay lat lon
+            type: data
+            mesh: fvcom_mesh
+            location: node
+        float km[node,siglev,time]   
+            long_name: Turbulent Eddy Viscosity For Momentum
+            units: m 2 s-1
+            coordinates: time siglev lat lon
+            type: data
+            mesh: fvcom_mesh
+            location: node
+        float kh[node,siglev,time]   
+            long_name: Turbulent Eddy Viscosity For Scalars
+            units: m 2 s-1
+            coordinates: time siglev lat lon
+            type: data
+            mesh: fvcom_mesh
+            location: node
+        float kq[node,siglev,time]   
+            long_name: Turbulent Eddy Viscosity For Q2/Q2L
+            units: m 2 s-1
+            coordinates: time siglev lat lon
+            type: data
+            mesh: fvcom_mesh
+            location: node
+        float q2[node,siglev,time]   
+            long_name: Turbulent Kinetic Energy
+            units: m2 s-2
+            coordinates: time siglev lat lon
+            type: data
+            mesh: fvcom_mesh
+            location: node
+        float q2l[node,siglev,time]   
+            long_name: Turbulent Kinetic Energy X Turbulent Macroscale
+            units: m3 s-2
+            coordinates: time siglev lat lon
+            type: data
+            mesh: fvcom_mesh
+            location: node
+        float l[node,siglev,time]   
+            long_name: Turbulent Macroscale
+            units: m3 s-2
+            coordinates: time siglev lat lon
+            type: data
+            mesh: fvcom_mesh
+            location: node
+        float short_wave[node,time]   
+            long_name: Short Wave Radiation
+            units: W m-2
+            coordinates: time lat lon
+            type: data
+            standard_name: net_downward_shortwave_flux_at_sea_water_surface
+            mesh: fvcom_mesh
+            location: node
+        float net_heat_flux[node,time]   
+            long_name: Surface Net Heat Flux
+            units: W m-2
+            coordinates: time lat lon
+            type: data
+            mesh: fvcom_mesh
+            location: node
+        float uwind_stress[nele,time]   
+            long_name: Eastward Wind Stress
+            standard_name: surface_downward_eastward_stress
+            units: Pa
+            type: data
+            coordinates: time latc lonc
+            mesh: fvcom_mesh
+            location: face
+        float vwind_stress[nele,time]   
+            long_name: Northward Wind Stress
+            standard_name: surface_downward_northward_stress
+            units: Pa
+            type: data
+            coordinates: time latc lonc
+            mesh: fvcom_mesh
+            location: face
+        int fvcom_mesh[]   
+            cf_role: mesh_topology
+            topology_dimension: 2
+            node_coordinates: lon lat
+            face_coordinates: lonc latc
+            face_node_connectivity: nv
+
+     10 dimensions:
+        four  Size:4
+[1] "vobjtovarid4: **** WARNING **** I was asked to get a varid for dimension named four BUT this dimension HAS NO DIMVAR! Code will probably fail at this point"
+        maxStrlen64  Size:64
+[1] "vobjtovarid4: **** WARNING **** I was asked to get a varid for dimension named maxStrlen64 BUT this dimension HAS NO DIMVAR! Code will probably fail at this point"
+        maxelem  Size:9
+[1] "vobjtovarid4: **** WARNING **** I was asked to get a varid for dimension named maxelem BUT this dimension HAS NO DIMVAR! Code will probably fail at this point"
+        maxnode  Size:11
+[1] "vobjtovarid4: **** WARNING **** I was asked to get a varid for dimension named maxnode BUT this dimension HAS NO DIMVAR! Code will probably fail at this point"
+        nele  Size:90415
+[1] "vobjtovarid4: **** WARNING **** I was asked to get a varid for dimension named nele BUT this dimension HAS NO DIMVAR! Code will probably fail at this point"
+        node  Size:48451
+[1] "vobjtovarid4: **** WARNING **** I was asked to get a varid for dimension named node BUT this dimension HAS NO DIMVAR! Code will probably fail at this point"
+        siglay  Size:45
+            long_name: Sigma Layers
+            standard_name: ocean_sigma_coordinate
+            positive: up
+            valid_min: -1
+            valid_max: 0
+            formula_terms: sigma: siglay eta: zeta depth: h
+        siglev  Size:46
+            long_name: Sigma Levels
+            standard_name: ocean_sigma/general_coordinate
+            positive: up
+            valid_min: -1
+            valid_max: 0
+            formula_terms: sigma:siglay eta: zeta depth: h
+        three  Size:3
+[1] "vobjtovarid4: **** WARNING **** I was asked to get a varid for dimension named three BUT this dimension HAS NO DIMVAR! Code will probably fail at this point"
+        time  Size:342348
+            long_name: time
+            units: days since 1858-11-17 00:00:00
+            format: modified julian day (MJD)
+            time_zone: UTC
+            standard_name: time
+
+    17 global attributes:
+        title: GOM3 Nesting  by Yf.Sun@umassd.edu
+        institution: School for Marine Science and Technology
+        source: FVCOM_3.0
+        history: model started at: 22/12/2011   16:41
+        references: http://fvcom.smast.umassd.edu, http://codfish.smast.umassd.edu
+        Conventions: CF-1.4, UGRID-0.9
+        CoordinateSystem: Cartesian
+        CoordinateProjection: none
+        Tidal_Forcing: TIDAL ELEVATION FORCING IS OFF!
+        River_Forcing: THERE ARE 50 RIVERS IN THIS MODEL.
+RIVER INFLOW IS ON THE nodes WHERE TEMPERATURE AND SALINITY ARE calculated IN THE MODEL.
+THE FOLLOWING RIVER NAMES ARE USED:
+Connecticut_CT
+Farmington_CT
+Salmon_CT
+Quinebaug_CT
+Yantic_CT
+Shetucket_CT
+Housatonic_CT
+Quinnipiac_CT
+Neponset_MA
+Merrimac_MA
+Spicket_MA
+Threemile_MA
+Wading_MA
+Taunton_MA
+Paskamanset_MA
+Quashnet_MA
+Jones_MA
+Indian_Head_MA
+Charles_MA
+Aberjona_MA
+Alewife_MA
+Saugus_MA
+Ipswich_MA
+Parker_MA
+St_John_basin_ME
+St_John_dickey_ME
+St_John_fish_ME
+Allagash_ME
+Aroostook_ME
+St_Croix_ME
+Penobscot_ME
+Androscoggin_ME
+Saco_ME
+Kennebec_ME
+Winnicut_NH
+Exeter_NH
+Lamprey_NH
+Cocheco_NH
+Isinglass_NH
+Hudson_Fort_Edward_NY
+Hudson_Waterford_NY
+Mohawk_NY
+Hoosic_NY
+Hunt_RI
+Pawcatuck_RI
+Pawtuxet_RI
+Moshassuck_RI
+Blackstone_RI
+Tenmile_RI
+Mill_RI
+        GroundWater_Forcing: GROUND WATER FORCING IS OFF!
+        Surface_Heat_Forcing: FVCOM variable surface heat forcing file:
+FILE NAME:gom_forcing.nc
+SOURCE:FVCOM grid (unstructured) surface forcing
+Unknown start date meta data format
+        Surface_Wind_Forcing: FVCOM variable surface Wind forcing:
+FILE NAME:gom_forcing.nc
+SOURCE:FVCOM grid (unstructured) surface forcing
+Unknown start date meta data format
+        Surface_PrecipEvap_Forcing: FVCOM periodic surface precip forcing:
+FILE NAME:gom_forcing.nc
+SOURCE:FVCOM grid (unstructured) surface forcing
+Unknown start date meta data format
+        cdm_data_type: any
+        DODS.strlen: 26
+        DODS.dimName: DateStrLen

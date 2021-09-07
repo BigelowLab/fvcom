@@ -4,8 +4,7 @@
 \alias{plot_mesh_geometry}
 \title{Given a (small) mesh, plot the mesh and possibly label}
 \usage{
-plot_mesh_geometry(mesh, ..., label_vertices = TRUE,
-  label_polygons = FALSE)
+plot_mesh_geometry(mesh, ..., label_vertices = TRUE, label_polygons = FALSE)
 }
 \arguments{
 \item{mesh}{a mesh produced by \code{\link{get_node_mesh_geometry}}}

@@ -4,9 +4,13 @@
 \alias{mur_template}
 \title{Retrieve a raster template that covers the provided mesh and aligns with MUR SST pixels}
 \usage{
-mur_template(x, res = c(0.01, 0.01),
-  crs = "+proj=longlat +datum=WGS84 +no_defs", bb = c(-75.69, -56.85,
-  35.27, 46.15), ...)
+mur_template(
+  x,
+  res = c(0.01, 0.01),
+  crs = "+proj=longlat +datum=WGS84 +no_defs",
+  bb = c(-75.69, -56.85, 35.27, 46.15),
+  ...
+)
 }
 \arguments{
 \item{x}{the mesh geometry}

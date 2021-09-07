@@ -4,8 +4,13 @@
 \alias{fvcom_nodes}
 \title{Retrieve node locations}
 \usage{
-fvcom_nodes(x, what = c("lonlat", "xy")[1], index = NULL,
-  form = c("table", "sf")[1], include = NULL)
+fvcom_nodes(
+  x,
+  what = c("lonlat", "xy")[1],
+  index = NULL,
+  form = c("table", "sf")[1],
+  include = NULL
+)
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}

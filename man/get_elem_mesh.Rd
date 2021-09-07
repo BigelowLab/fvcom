@@ -4,8 +4,12 @@
 \alias{get_elem_mesh}
 \title{Retrieve the element-based polygon mesh with assigned values}
 \usage{
-get_elem_mesh(x, vars = c("u", "v"), mesh = get_elem_mesh_geometry(x,
-  ordered = FALSE), ...)
+get_elem_mesh(
+  x,
+  vars = c("u", "v"),
+  mesh = get_elem_mesh_geometry(x, ordered = FALSE),
+  ...
+)
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}
