@@ -308,4 +308,4 @@ The mesh can be interpolated on to a regular grid (“rasterize”).
 
 ### More on Gulf of Maine 3d nesting model data
 
-See this for a walk through.
+See [this](https://github.com/BigelowLab/fvcom/blob/master/inst/notebooks/gom3.md) for a walk through.
