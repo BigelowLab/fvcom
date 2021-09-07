@@ -1,6 +1,7 @@
 ---
 title: "FVCOM - GOM3"
 output: github_document
+always_allow_html: true
 ---
 
  + title: GOM3 Nesting  by Yf.Sun@umassd.edu
