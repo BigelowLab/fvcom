@@ -7,7 +7,7 @@
 mur_template(
   x,
   res = c(0.01, 0.01),
-  crs = "+proj=longlat +datum=WGS84 +no_defs",
+  crs = "epsg:4326",
   bb = c(-75.69, -56.85, 35.27, 46.15),
   ...
 )

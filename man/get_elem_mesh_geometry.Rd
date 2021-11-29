@@ -4,18 +4,21 @@
 \alias{get_elem_mesh_geometry}
 \title{Compute the mesh (polygons) for elements}
 \usage{
-get_elem_mesh_geometry(x, what = "lonlat", ...)
+get_elem_mesh_geometry(x, what = "lonlat", crs = "auto", ...)
 }
 \arguments{
 \item{x}{FVCOM ncdf4 object}
 
 \item{what}{character either 'lonlat' or 'xy'}
 
+\item{crs}{character (as "auto") or something suitable for \code{\link[sf]{st_crs}}}
+
 \item{...}{further arguments for \code{\link{distinct_polygons}}}
 }
 \value{
-sf collection of POLYGON with the following variable
+sf collection of POLYGON with the following variables
 \itemize{
+\item{elem the element identifier}
 \item{p1, p2, p3 the node identifiers for the three points define the polygon}
 \item{geometry 4 point polygon (closed so first and last the same)}
 }

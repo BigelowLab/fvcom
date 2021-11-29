@@ -13,10 +13,11 @@ Imports:
     dplyr,
     raster,
     sf,
-    fasterize
+    fasterize,
+    locate
 Maintainer: Ben Tupper <btupper@bigelow.org>
 Author: Ben Tupper <btupper@bigelow.org>
 URL: https://github.com/BigelowLab/fvcom
 License: MIT + file LICENSE
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2

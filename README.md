@@ -105,7 +105,7 @@ F is a general symbol representing scalar variables such as zeta, T, S,
 Km, Kh, and vertical velocity. A **solid dot** is the node of the
 triangles where scalar variable or vertical velocity is calculated and a
 **crossed open circle** is the centroid of a triangle where the
-horizontal velocity is calculated.*](inst/nodes-elements.png)
+horizontal velocity is calculated.*](inst/images/nodes-elements.png)
 
 ### Node and Element locations
 
@@ -221,7 +221,7 @@ mesh
 ```
 plot(sf::st_geometry(mesh))
 ```
-![The bare mesh geometry](inst/mesh.png)
+![The bare mesh geometry](inst/images/mesh.png)
 
 ### Mesh with variables
 
@@ -256,7 +256,7 @@ mesh <- get_mesh(x, vars = c("zeta", "u", "v"), mesh = mesh)
 plot(mesh[c("u", "v")], lty = 'blank', main = c("u", "v"))
 ```
 
-![The bare mesh geometry with interpolated variables](inst/uv.png)
+![The bare mesh geometry with interpolated variables](inst/images/uv.png)
 
 You can request variables at various dimensions such as times and sigma
 levels/layers - the default is the first of each dimension. While you
@@ -289,7 +289,7 @@ mesh <- get_mesh(x, vars = c("zeta", "u", "v"), mesh = mesh, time = 24)
 plot(mesh[c("u", "v")], lty = 'blank', main = c("u", "v"))
 ```
 ![The bare mesh geometry with interpolated variables at
-24h](inst/uv-24.png)
+24h](inst/images/uv-24.png)
 
 ### Rasterize
 
@@ -304,7 +304,7 @@ The mesh can be interpolated on to a regular grid (“rasterize”).
                           col.arrows = "white", 
                          main = 'Surface Currents')
 ```
-![Rasterized meshes](inst/surface_currents.png)
+![Rasterized meshes](inst/images/surface_currents.png)
 
 ### More on Gulf of Maine 3d nesting model data
 

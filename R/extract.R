@@ -1,3 +1,46 @@
+
+
+
+
+#' Get one or more variables by [element, siglay, time]
+#'
+#' @export
+#' @param x FVCOM ncdf4 object
+#' @param vars character one or more variable names to retrieve
+#' @param indices 3 element indices of the element volume to query or a matrix
+#'   of three columns
+#' @return matrix
+get_element_vars <- function(x, vars = c("u", "v", "ww"),
+                             indices = matrix(c(1,100, 200, 300,
+                                                1,3, 5, 8,
+                                                1,2,3,4),
+                                              ncol = 3)){
+
+  v <- list_vars(x) %>%
+    dplyr::filter(.data$name %in% vars)
+  ix <- vars %in% v$name
+  if (!all(ix)){
+    stop("one or more vars are not known:", paste(vars[!ix], collapse = ", "))
+  }
+  ix <- grepl("nele", v$dim1, fixed = TRUE)
+  if (!all(ix)) stop("vars must be dependent upon elements")
+
+  if (!inherits(indices, "matrix")) indices = matrix(indices, ncol = 3, nrow = 1,  byrow = TRUE)
+
+  counts <- rep(1, ncol(indices))
+  sapply(vars,
+         function(vname){
+           sapply(seq_len(nrow(indices)),
+            function(i){
+              start <- as.vector(indices[i, , drop = TRUE])
+              ncdf4::ncvar_get(x, vname,
+                               start = start,
+                               count = counts)
+            })
+         }, simplify = TRUE)
+}
+
+
 #' Retrieve node or element based polygon mesh
 #'
 #' @export
@@ -117,19 +160,28 @@ get_mesh_geometry <- function(x,
 #' @export
 #' @param x FVCOM ncdf4 object
 #' @param what character either 'lonlat' or 'xy'
+#' @param crs character (as "auto") or something suitable for \code{\link[sf]{st_crs}}
 #' @param ... further arguments for \code{\link{distinct_polygons}}
-#' @return sf collection of POLYGON with the following variable
+#' @return sf collection of POLYGON with the following variables
 #' \itemize{
+#' \item{elem the element identifier}
 #' \item{p1, p2, p3 the node identifiers for the three points define the polygon}
 #' \item{geometry 4 point polygon (closed so first and last the same)}
 #' }
-get_elem_mesh_geometry <- function(x, what = 'lonlat', ...){
+get_elem_mesh_geometry <- function(x, what = 'lonlat', crs = "auto", ...){
+
+  if (tolower(crs[1]) == "auto"){
+    crs <- switch(tolower(what[1]),
+                  "lonlat" = fvcom_crs(what = "lonlat", form = "epsg"),
+                  fvcom_crs(what = "xy", form = "wkt"))
+  }
 
   # nodes around each element
   # make a matrix, and then wrap
   p <- distinct_polygons(x, where = 'elems', ...)
   m <- as.matrix(p)
   m <- cbind(m, m[,1])
+  N <- nrow(m)
   nodes <- fvcom_nodes(x, form = 'table', what = what)
   xy <- nodes %>%
     dplyr::select(-.data$node) %>%
@@ -140,9 +192,12 @@ get_elem_mesh_geometry <- function(x, what = 'lonlat', ...){
       sf::st_polygon(list(xy[m[i,],]))
     })
 
+
   p %>%
-    dplyr::mutate( geometry = g) %>%
-    sf::st_sf(sf_column_name = "geometry", crs = fvcom_crs(what))
+    dplyr::mutate(geometry = g) %>%
+    sf::st_sf(sf_column_name = "geometry", crs = crs) %>%
+    dplyr::mutate(elem = seq_len(N)) %>%
+    dplyr::relocate(.data$elem, .before = 1)
 
 }
 
@@ -151,16 +206,22 @@ get_elem_mesh_geometry <- function(x, what = 'lonlat', ...){
 #' @export
 #' @param x FVCOM ncdf4 object
 #' @param what character either 'lonlat' or 'xy'
+#' @param crs character (as "auto") or something suitable for \code{\link[sf]{st_crs}}
 #' @param ... further arguments for \code{\link{distinct_polygons}}
 #' @return sf collection of POLYGON with the following variable
 #' \itemize{
+#' \item{node node identifier}
 #' \item{p1, p2, p3 the node identifiers for the three points define the polygon}
 #' \item{geometry 4 point polygon (closed so first and last the same)}
 #' }
-get_node_mesh_geometry <- function(x, what = 'lonlat', ...){
+get_node_mesh_geometry <- function(x, what = 'lonlat', crs = "auto", ...){
+
+
+  if (tolower(crs[1]) == "auto") crs <- fvcom_crs(what[1])
 
   p <- distinct_polygons(x, where = 'nodes', ...)
   m <- as.matrix(p)
+  N <- nrow(m)
   nodes <- fvcom_nodes(x, form = 'table', what = what)
   xy <- nodes %>%
     dplyr::select(-.data$node) %>%
@@ -174,7 +235,9 @@ get_node_mesh_geometry <- function(x, what = 'lonlat', ...){
 
   p %>%
     dplyr::mutate( geometry = g) %>%
-    sf::st_sf(sf_column_name = "geometry", crs = fvcom_crs(what))
+    sf::st_sf(sf_column_name = "geometry", crs = crs) %>%
+    dplyr::mutate(node = seq_len(N)) %>%
+    dplyr::relocate(.data$node, .before = 1)
 
 }
 
@@ -227,13 +290,15 @@ distinct_polygons <- function(x,
 #'
 #' @export
 #' @param x ncdf4 object
+#' @param what character either 'lonlat' or 'xy'
 #' @param form character specifies output form "table", "raster" or "mesh"
 #' @return something
 bathymetry <- function(x,
+                       what = c("lonlat", "xy")[1],
                        form = c("table", "raster", "mesh")[1]){
 
   xyz <- dplyr::bind_cols(
-    fvcom_nodes(x, what = 'lonlat'),
+    fvcom_nodes(x, what = what),
     dplyr::tibble(bathymetry = ncdf4::ncvar_get(x, "h")))
   if (tolower(form[1]) == "raster"){
     xr <- range(xyz$lon)
@@ -244,17 +309,15 @@ bathymetry <- function(x,
                        xmx = xr[2] + r/2,
                        ymn = yr[1] - r/2,
                        ymx = yr[2] + r/2,
-                       crs = "+init=epsg:4326")
+                       crs = fvcom_crs(what[1]))
     xyz <- sf::st_as_sf(xyz, coords = c("lon", "lat"),
-                        crs = "+init=epsg:4326")
+                        crs = fvcom_crs(what[1]))
     xyz <- raster::rasterize(xyz, template,
                              field = "bathymetry",
                              fun = mean)
 
-  }
-
-  if (tolower(form[1]) == "mesh"){
-
+  } else if (tolower(form[1]) == "mesh"){
+    # uhh?
   }
   xyz
 }

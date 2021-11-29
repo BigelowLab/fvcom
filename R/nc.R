@@ -1,10 +1,85 @@
 #' Test is an object is of ncdf4 class
 #'
+#'
 #' @export
 #' @param x object to be tested
 #' @return logical TRUE if the object is a valid ncdf4 class
 is_ncdf4 <- function(x){
   inherits(x, "ncdf4")
+}
+
+
+#' Generate random points within the element or node space.
+#'
+#' A random point may fall outside of the envelope of elements/nodes since
+#' we use a simple bounding box for each dimension.  Be sure to check your
+#' points, if that is important, with \code{\link[sf]{st_contains}}.
+#'
+#' @export
+#' @param x FVCOM ncdf4 object
+#' @param n the number of points to generate
+#' @param what either 'lonlat' or 'xy'
+#' @param ... arguments for \code{\link{fvcom_time}}
+#' @param form character either 'tibble' or 'sf'
+#' @return tibble of
+#' \itemize{
+#' \item{x x coordinate, possibly lon}
+#' \item{y y coordinate, possibly lat}
+#' \item{siglay sigma layer value}
+#' \item{siglev sigma level value}
+#' \item{time time ast POSIXct}
+#' }
+#' or an sf POINT object where xy are the geometry
+fvcom_random <- function(x, n = 1,
+                         what = c("longlat", "xy")[1],
+                         form = c("tibble", "sf")[1], 
+                         ...){
+
+
+
+  rand <- function(v, n = 1) {
+    if (inherits(v, "POSIXt")){
+      t0 <- v[1]
+      v <- as.numeric(v)
+      vd <- v - v[1]
+      r <- runif(n, min = vd[1], max = vd[2]) + t0
+    } else {
+      r <- runif(n, min = v[1], max = v[2])
+    }
+    return(r)
+  }
+
+  if (tolower(what[1]) =='xy'){
+    xr <- range(ncdf4::ncvar_get(x, "x"))
+    yr <- range(ncdf4::ncvar_get(x, "y"))
+  } else {
+    xr <- range(ncdf4::ncvar_get(x, "lon"))
+    yr <- range(ncdf4::ncvar_get(x, "lat"))
+  }
+  
+  siglev <- x$dim$siglev$vals[1,]
+  siglay <- x$dim$siglay$vals[1,]
+  siglayv <- sample(siglay, n, replace = TRUE)
+  siglevv <- siglev[locate::locate(siglayv, siglev)]
+  
+  
+  siglev <- x$dim$siglev$vals
+  timer <- range(fvcom::fvcom_time(x, ...))
+
+  r <- dplyr::tibble(
+    x = rand(xr, n = n),
+    y = rand(yr, n = n),
+    siglev = siglevv,
+    siglay = siglayv,
+    time = rand(timer, n = n))
+
+  if (tolower(form[1]) == 'sf'){
+    r <- sf::st_as_sf(r,
+                      coords = c("x", "y")) %>%
+      sf::st_set_crs(fvcom_crs(what = what[1]))
+  }
+
+  r
 }
 
 
@@ -37,17 +112,44 @@ fvcom_time <- function(x,
 #'
 #' @export
 #' @param x FVCOM ncdf4 object
-#' @param where character, either 'nodes'( or 'node') or 'elems' (or 'elem')
+#' @param where character, either 'nodes'( or 'node'), 'elems' (or 'elem'),
+#'   'siglay', 'siglev', or 'time'
 #' @return  number of nodes or elements
-fvcom_count <- function(x, where = c("nodes", "elems")[1]){
+fvcom_count <- function(x, where = c("nodes", "elems", "siglay", "siglev", "time")[1]){
 
   if (!is_ncdf4(x)) stop("input must be ncdf4 class object")
 
   switch(tolower(where[1]),
          'node' = x$dim$node$len,
          'nodes' = x$dim$node$len,
+         'siglay' = x$dim$siglay$len,
+         'siglev' = x$dim$siglev$len,
+         'time' = x$dim$time$len,
          x$dim$nele$len)
 }
+
+#' Generate a random sample of element [elem, siglay,time] or node [node, siglev, time] indices
+#'
+#' @export
+#' @param x ncdf4 FVCOM object
+#' @param n numeric, the number of IDs to retrieve
+#' @param where character, either 'nodes' or 'elems' (default)
+#' @return named vector of random indices
+fvcom_sample <- function(x, n = 1, where = c("elems", "nodes")[1]){
+  dnames <- switch(tolower(where[1]),
+   #[elem, siglay, time]
+   'elems' = c("elems", "siglay", "time"),
+   'nodes' = c("nodes", "siglev", "time"),
+    stop("where must be 'elems' or 'nodes'"))
+
+
+   sapply(dnames,
+          function(dname){
+            sample(fvcom::fvcom_count(x, where = dname), size = n, replace = FALSE)
+          })
+
+}
+
 
 #' Retrieve node locations
 #'
@@ -250,18 +352,42 @@ fvcom_nav <- function(x,
 #' Retrieve the CRS
 #'
 #' @export
+#' @param x FVCOM ncdf4 object
 #' @param what character either 'xy', 'lonlat' or 'longlat'.  Actually, if not 'xy'
 #'   then 'lonlat' is returned.
+#' @param form character, one of 'wkt', 'epsg' or 'proj' By default 'wkt' if \code{what} is
+#'   'xy' and 'epsg' otherwise.
 #' @return character CRS
-fvcom_crs <- function(what = "lonlat"){
+fvcom_crs <- function(x,
+                      what = c("lonlat", "xy")[1],
+                      form = c("wkt", "epsg", "proj")[ifelse(tolower(what[1]) == "xy", 1, 2)]){
 
   # https://spatialreference.org/ref/esri/102284/
   # nad83:1802 -> epsg::102684 (feet)
   # nad83:1802 -> epsg::102284 (meters)
+  #default values
+  epsg <- c(xy = 'EPSG:102284',
+            lonlat = 'EPSG:4326')
+  wkt <- c(xy = "PROJCS[\"unknown\",GEOGCS[\"unknown\",DATUM[\"North_American_Datum_1983\",SPHEROID[\"GRS 1980\",6378137,298.257222101,AUTHORITY[\"EPSG\",\"7019\"]],AUTHORITY[\"EPSG\",\"6269\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",42.8333333333333],PARAMETER[\"central_meridian\",-70.1666666666667],PARAMETER[\"scale_factor\",0.999966666666667],PARAMETER[\"false_easting\",900000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH]]",
+           lonlat = "GEOGCRS[\"WGS 84\",\n    DATUM[\"World Geodetic System 1984\",\n        ELLIPSOID[\"WGS 84\",6378137,298.257223563,\n            LENGTHUNIT[\"metre\",1]]],\n    PRIMEM[\"Greenwich\",0,\n        ANGLEUNIT[\"degree\",0.0174532925199433]],\n    CS[ellipsoidal,2],\n        AXIS[\"geodetic latitude (Lat)\",north,\n            ORDER[1],\n            ANGLEUNIT[\"degree\",0.0174532925199433]],\n        AXIS[\"geodetic longitude (Lon)\",east,\n            ORDER[2],\n            ANGLEUNIT[\"degree\",0.0174532925199433]],\n    USAGE[\n        SCOPE[\"unknown\"],\n        AREA[\"World\"],\n        BBOX[-90,-180,90,180]],\n    ID[\"EPSG\",4326]]")
+  proj <- c(xy = "proj=tmerc +datum=NAD83 +lon_0=-70d10 lat_0=42d50 k=.9999666666666667 x_0=900000 y_0=0",
+            lonlat = "+proj=longlat +datum=WGS84")
 
-  crs <- switch(tolower(what[1]),
-                "xy" = "epsg:102284",
-                       "epsg:4326")
+  if (!missing(x)){
+    att <- ncdf4::ncatt_get(X, varid = 0)
+    if ("CoordinateProjection" %in% names(att)){
+      proj[["xy"]] <- att$CoordinateProjection
+      wkt[["xy"]] <- sf::st_crs(proj[['xy']])
+    }
+  }
+
+
+  wh <- tolower(what[1])
+  switch(tolower(form[1]),
+    "epsg" = epsg[[wh]],
+    "wkt" = wkt[[wh]],
+    "proj" = proj[[wh]]
+  ) # switch on form
 }
 
 #' Get variables for nodes or elements.  It is not possible to get a mix of
@@ -373,7 +499,7 @@ get_node_var <- function(x, var = 'zeta',
 #' @param elem integer one or more 1-based node ID(s).  These must form
 #'   a contiguous sequence of elems identifers
 #' @param y integer a single 1-based index into siglay, or sigelev
-#' @param time either a single 1-based integer of POSIXct
+#' @param time either a single 1-based integer or POSIXct
 #' @param y_transform logical, if convert y from sigma to integer?
 #'    Note that time is auto-converted
 #' @return tibble of element id and values - one row for each node

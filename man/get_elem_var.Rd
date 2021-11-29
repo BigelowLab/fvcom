@@ -27,7 +27,7 @@ a contiguous sequence of elems identifers}
 
 \item{y}{integer a single 1-based index into siglay, or sigelev}
 
-\item{time}{either a single 1-based integer of POSIXct}
+\item{time}{either a single 1-based integer or POSIXct}
 
 \item{y_transform}{logical, if convert y from sigma to integer?
 Note that time is auto-converted}

@@ -4,11 +4,20 @@
 \alias{fvcom_crs}
 \title{Retrieve the CRS}
 \usage{
-fvcom_crs(what = "lonlat")
+fvcom_crs(
+  x,
+  what = c("lonlat", "xy")[1],
+  form = c("wkt", "epsg", "proj")[ifelse(tolower(what[1]) == "xy", 1, 2)]
+)
 }
 \arguments{
+\item{x}{FVCOM ncdf4 object}
+
 \item{what}{character either 'xy', 'lonlat' or 'longlat'.  Actually, if not 'xy'
 then 'lonlat' is returned.}
+
+\item{form}{character, one of 'wkt', 'epsg' or 'proj' By default 'wkt' if \code{what} is
+'xy' and 'epsg' otherwise.}
 }
 \value{
 character CRS
