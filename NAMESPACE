@@ -3,6 +3,7 @@
 export(bathymetry)
 export(default_template)
 export(distinct_polygons)
+export(fvcom_bounds)
 export(fvcom_count)
 export(fvcom_crs)
 export(fvcom_elems)

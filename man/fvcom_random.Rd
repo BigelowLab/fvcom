@@ -28,8 +28,7 @@ tibble of
 \itemize{
 \item{x x coordinate, possibly lon}
 \item{y y coordinate, possibly lat}
-\item{siglay sigma layer value}
-\item{siglev sigma level value}
+\item{z z coordinate as sigma value} 
 \item{time time ast POSIXct}
 }
 or an sf POINT object where xy are the geometry

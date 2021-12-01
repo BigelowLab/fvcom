@@ -25,8 +25,7 @@ is_ncdf4 <- function(x){
 #' \itemize{
 #' \item{x x coordinate, possibly lon}
 #' \item{y y coordinate, possibly lat}
-#' \item{siglay sigma layer value}
-#' \item{siglev sigma level value}
+#' \item{z z coordinate as sigma value} 
 #' \item{time time ast POSIXct}
 #' }
 #' or an sf POINT object where xy are the geometry
@@ -48,6 +47,7 @@ fvcom_random <- function(x, n = 1,
     }
     return(r)
   }
+  
 
   if (tolower(what[1]) =='xy'){
     xr <- range(ncdf4::ncvar_get(x, "x"))
@@ -57,25 +57,20 @@ fvcom_random <- function(x, n = 1,
     yr <- range(ncdf4::ncvar_get(x, "lat"))
   }
   
-  siglev <- x$dim$siglev$vals[1,]
-  siglay <- x$dim$siglay$vals[1,]
-  siglayv <- sample(siglay, n, replace = TRUE)
-  siglevv <- siglev[locate::locate(siglayv, siglev)]
   
-  
-  siglev <- x$dim$siglev$vals
+  zr <- range(x$dim$siglev$vals[1,])
+
   timer <- range(fvcom::fvcom_time(x, ...))
 
   r <- dplyr::tibble(
     x = rand(xr, n = n),
     y = rand(yr, n = n),
-    siglev = siglevv,
-    siglay = siglayv,
+    z = rand(zr, n = n),
     time = rand(timer, n = n))
 
   if (tolower(form[1]) == 'sf'){
     r <- sf::st_as_sf(r,
-                      coords = c("x", "y")) %>%
+                      coords = c("x", "y", "z")) %>%
       sf::st_set_crs(fvcom_crs(what = what[1]))
   }
 
@@ -539,7 +534,7 @@ get_elem_var <- function(x, var = c("u", "v"),
       start <- c(start, y[1])
       count <- c(count, 1)
     } else {
-      stop("use another means to access var:", var)
+      #stop("use another means to access var:", var)
     }
   }
   if (length(dims) >= 3){

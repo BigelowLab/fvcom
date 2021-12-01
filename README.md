@@ -28,6 +28,7 @@ There are a number of models with a Gulf of Maine bend including
 -   [sf](https://cran.r-project.org/package=sf)
 -   [raster](https://cran.r-project.org/package=raster)
 -   [fasterize](https://cran.r-project.org/package=fasterize)
+-   [locate](https://github.com/BigelowLab/locate) **note this is not from CRAN**
 
 ### Installation
 

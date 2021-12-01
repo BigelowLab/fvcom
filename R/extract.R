@@ -321,3 +321,27 @@ bathymetry <- function(x,
   }
   xyz
 }
+
+
+#' Determine if elements on the boundary, and if so if open or closed
+#'
+#' @export
+#' @param x ncdf4 object
+#' @param threshold numeric, the depth at which to consider an edge open (deep) or closed (shallow)
+#' @return tibble with four variables \code{elem}, \code{h_center}, \code{edge}, \code{bound}
+fvcom_bounds <- function(x, threshold = 1){
+  
+  edge <- ncdf4::ncvar_get(x, "nbe") |>
+    apply(1, function(x) any(x < 1))
+  h <- fvcom::get_elem_var(CB$NC, "h_center")
+  shallow <- h$h_center < threshold
+  closed <- shallow & edge
+  open <- !shallow & edge
+  bound <- rep(NA_character_, nrow(h))
+  bound[closed] <- "closed"
+  bound[open] <- "open"
+  
+  h |>
+    dplyr::mutate(edge = edge,
+                  bound = bound)
+}
