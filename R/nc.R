@@ -362,11 +362,11 @@ fvcom_crs <- function(x,
   # nad83:1802 -> epsg::102284 (meters)
   #default values
   epsg <- c(xy = 'EPSG:102284',
-            lonlat = 'EPSG:4326')
+            lonlat = "EPSG:6318" ) #'EPSG:4326')  #https://epsg.io/6318
   wkt <- c(xy = "PROJCS[\"unknown\",GEOGCS[\"unknown\",DATUM[\"North_American_Datum_1983\",SPHEROID[\"GRS 1980\",6378137,298.257222101,AUTHORITY[\"EPSG\",\"7019\"]],AUTHORITY[\"EPSG\",\"6269\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",42.8333333333333],PARAMETER[\"central_meridian\",-70.1666666666667],PARAMETER[\"scale_factor\",0.999966666666667],PARAMETER[\"false_easting\",900000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH]]",
            lonlat = "GEOGCRS[\"WGS 84\",\n    DATUM[\"World Geodetic System 1984\",\n        ELLIPSOID[\"WGS 84\",6378137,298.257223563,\n            LENGTHUNIT[\"metre\",1]]],\n    PRIMEM[\"Greenwich\",0,\n        ANGLEUNIT[\"degree\",0.0174532925199433]],\n    CS[ellipsoidal,2],\n        AXIS[\"geodetic latitude (Lat)\",north,\n            ORDER[1],\n            ANGLEUNIT[\"degree\",0.0174532925199433]],\n        AXIS[\"geodetic longitude (Lon)\",east,\n            ORDER[2],\n            ANGLEUNIT[\"degree\",0.0174532925199433]],\n    USAGE[\n        SCOPE[\"unknown\"],\n        AREA[\"World\"],\n        BBOX[-90,-180,90,180]],\n    ID[\"EPSG\",4326]]")
   proj <- c(xy = "proj=tmerc +datum=NAD83 +lon_0=-70d10 lat_0=42d50 k=.9999666666666667 x_0=900000 y_0=0",
-            lonlat = "+proj=longlat +datum=WGS84")
+            lonlat = "+proj=longlat +datum=NAD83")
 
   if (!missing(x)){
     att <- ncdf4::ncatt_get(X, varid = 0)
