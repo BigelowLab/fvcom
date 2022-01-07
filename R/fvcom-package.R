@@ -4,7 +4,7 @@
 #' @docType package
 #' @name fvcom-package
 #' @aliases fvcom
-#' @importFrom dplyr %>%
+#' @importFrom stats runif
 #' @importFrom rlang !! := .data
 #' @importFrom graphics plot text
 NULL

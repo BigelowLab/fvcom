@@ -16,7 +16,7 @@ get_element_vars <- function(x, vars = c("u", "v", "ww"),
                                                 1,2,3,4),
                                               ncol = 3)){
 
-  v <- list_vars(x) %>%
+  v <- list_vars(x) |>
     dplyr::filter(.data$name %in% vars)
   ix <- vars %in% v$name
   if (!all(ix)){
@@ -57,7 +57,7 @@ get_mesh <- function(x,
                      ...){
 
   for (var in rev(vars)){
-    z <- lut %>%
+    z <- lut |>
       dplyr::filter(.data$name == var)
 
     mesh <- switch(tolower(z$dim1[1]),
@@ -84,24 +84,25 @@ get_node_mesh <- function(x,
                           na.rm = TRUE,
                           ...){
   v <- get_node_var(x, vars, ...)
-  m <- as.matrix(mesh %>%
-                   sf::st_set_geometry(NULL) %>%
+  m <- as.matrix(mesh |>
+                   sf::st_set_geometry(NULL) |>
                    dplyr::select(.data$p1, .data$p2, .data$p3))
   for (var in vars){
     if (var %in% names(mesh)){
       mesh[[var]] <- sapply(seq_len(nrow(mesh)),
                                function(i){
-                                 fun((v %>%
+                                 fun((v |>
                                         dplyr::slice(m[i,]))[[var]], na.rm = na.rm)
                                })
     } else {
-      mesh <- mesh %>%
-        tibble::add_column(!!var :=
+      mesh <- mesh |>
+        dplyr::mutate(!!var :=
                       sapply(seq_len(nrow(mesh)),
                              function(i){
-                               fun((v %>%
+                               fun((v |>
                                      dplyr::slice(m[i,]))[[var]], na.rm = na.rm)
-                             }), .before = "p1")
+                             })) |>
+        dplyr::relocate(dplyr::all_of(var), .before = "p1")
     }
   }
   mesh
@@ -120,14 +121,15 @@ get_elem_mesh <- function(x,
                           mesh = get_elem_mesh_geometry(x, ordered = FALSE),
                           ...){
 
-  v <- get_elem_var(x, vars, ...) %>%
+  v <- get_elem_var(x, vars, ...) |>
     dplyr::select(-.data$elem)
   for (var in vars){
     if (var %in% names(mesh)){
       mesh[[var]] <- v[[var]]
     } else {
-      mesh <- mesh %>%
-        tibble::add_column(!!var := v[[var]], .before = "p1")
+      mesh <- mesh |>
+        dplyr::mutate(!!var := v[[var]]) |>
+        dplyr::relocate(dplyr::all_of(var), .before = "p1")
     }
   }
   mesh
@@ -183,8 +185,8 @@ get_elem_mesh_geometry <- function(x, what = 'lonlat', crs = "auto", ...){
   m <- cbind(m, m[,1])
   N <- nrow(m)
   nodes <- fvcom_nodes(x, form = 'table', what = what)
-  xy <- nodes %>%
-    dplyr::select(-.data$node) %>%
+  xy <- nodes |>
+    dplyr::select(-.data$node) |>
     as.matrix()
   nm <- colnames(xy)
   g <- lapply(seq_len(nrow(m)),
@@ -193,10 +195,10 @@ get_elem_mesh_geometry <- function(x, what = 'lonlat', crs = "auto", ...){
     })
 
 
-  p %>%
-    dplyr::mutate(geometry = g) %>%
-    sf::st_sf(sf_column_name = "geometry", crs = crs) %>%
-    dplyr::mutate(elem = seq_len(N)) %>%
+  p |>
+    dplyr::mutate(geometry = g) |>
+    sf::st_sf(sf_column_name = "geometry", crs = crs) |>
+    dplyr::mutate(elem = seq_len(N)) |>
     dplyr::relocate(.data$elem, .before = 1)
 
 }
@@ -223,8 +225,8 @@ get_node_mesh_geometry <- function(x, what = 'lonlat', crs = "auto", ...){
   m <- as.matrix(p)
   N <- nrow(m)
   nodes <- fvcom_nodes(x, form = 'table', what = what)
-  xy <- nodes %>%
-    dplyr::select(-.data$node) %>%
+  xy <- nodes |>
+    dplyr::select(-.data$node) |>
     as.matrix()
   nm <- colnames(xy)
   g <- lapply(seq_len(nrow(p)),
@@ -233,10 +235,10 @@ get_node_mesh_geometry <- function(x, what = 'lonlat', crs = "auto", ...){
       sf::st_polygon(list(xy[ix,]))
     })
 
-  p %>%
-    dplyr::mutate( geometry = g) %>%
-    sf::st_sf(sf_column_name = "geometry", crs = crs) %>%
-    dplyr::mutate(node = seq_len(N)) %>%
+  p |>
+    dplyr::mutate( geometry = g) |>
+    sf::st_sf(sf_column_name = "geometry", crs = crs) |>
+    dplyr::mutate(node = seq_len(N)) |>
     dplyr::relocate(.data$node, .before = 1)
 
 }
@@ -273,14 +275,14 @@ distinct_polygons <- function(x,
     # convert to tibble
     # retain only the unique ones
     colnames(ns) <- paste0("p", 1:3)
-    r <- dplyr::as_tibble(ns) %>% dplyr::distinct_all()
+    r <- dplyr::as_tibble(ns) |> dplyr::distinct_all()
   } else {
     nv <- ncdf4::ncvar_get(x, "nv")
     colnames(nv) <- paste0("p", 1:3)
     r <- dplyr::as_tibble(nv)
   }
 
-  if (ordered) r <- r %>% dplyr::arrange(.data$p1, .data$p2, .data$p3)
+  if (ordered) r <- r |> dplyr::arrange(.data$p1, .data$p2, .data$p3)
 
   r
 }
@@ -333,7 +335,7 @@ fvcom_bounds <- function(x, threshold = 1){
   
   edge <- ncdf4::ncvar_get(x, "nbe") |>
     apply(1, function(x) any(x < 1))
-  h <- fvcom::get_elem_var(CB$NC, "h_center")
+  h <- fvcom::get_elem_var(x, "h_center")
   shallow <- h$h_center < threshold
   closed <- shallow & edge
   open <- !shallow & edge

@@ -70,7 +70,7 @@ fvcom_random <- function(x, n = 1,
 
   if (tolower(form[1]) == 'sf'){
     r <- sf::st_as_sf(r,
-                      coords = c("x", "y", "z")) %>%
+                      coords = c("x", "y", "z")) |>
       sf::st_set_crs(fvcom_crs(what = what[1]))
   }
 
@@ -182,31 +182,34 @@ fvcom_nodes <- function(x,
                                        lat = ncdf4::ncvar_get(x, varid = "lat")),
                'xy'    = dplyr::tibble(node = idx,
                                        x1 = ncdf4::ncvar_get(x, varid = "x"),
-                                       y = ncdf4::ncvar_get(x, varid = "y")) %>%
+                                       y = ncdf4::ncvar_get(x, varid = "y")) |>
                          dplyr::rename(x = .data$x1) )
 
   if (inherits(include, "character")){
     include <- tolower(include)
     if ("art2" %in% include){
-      r <- r %>%
-        tibble::add_column(art2 = ncdf4::ncvar_get(x, varid = "art2"), .after = "node")
+      r <- r |>
+        dplyr::mutate(art2 = ncdf4::ncvar_get(x, varid = "art2")) |>
+        dplyr::relocate(dplyr::all_of("art2"), .after = "node")
     }
     if ("art1" %in% include){
-      r <- r %>%
-        tibble::add_column(art1 = ncdf4::ncvar_get(x, varid = "art1"), .after = "node")
+      r <- r |>
+        dplyr::mutate(art1 = ncdf4::ncvar_get(x, varid = "art1"))  |>
+        dplyr::relocate(dplyr::all_of("art1"), .after = "node")
     }
     if ("nbs" %in% include){
       ntsn   <- ncdf4::ncvar_get(x, "ntsn")
       nbsn <- ncdf4::ncvar_get(x, "nbsn")
       nav <- cbind(nbsn, ntsn)
       n <- ncol(nav)
-      r <- r %>%
-        tibble::add_column(nbs = apply(nav, 1, function(x) x[1:(x[n])] ), .after = "node")
+      r <- r |>
+        dplyr::mutate(nbs = apply(nav, 1, function(x) x[1:(x[n])] )) |>
+        dplyr::relocate(dplyr::all_of("nbs"), .after = "node")
     }
   }
 
    if (!is.null(index)){
-     r <- r %>%
+     r <- r |>
        dplyr::slice(index)
    }
 
@@ -214,7 +217,7 @@ fvcom_nodes <- function(x,
      coords <- switch(tolower(what),
                       "xy" = c("x", "y"),
                       c("lon", "lat"))
-     r <- r %>%
+     r <- r |>
        sf::st_as_sf(coords = coords, crs = fvcom_crs(what))
    }
 
@@ -257,7 +260,7 @@ fvcom_elems <- function(x,
                                  lat = ncdf4::ncvar_get(x, varid = "latc")),
          'xy'    = dplyr::tibble(elem = idx,
                                  x1 = ncdf4::ncvar_get(x, varid = "xc"),
-                                 y = ncdf4::ncvar_get(x, varid = "yc")) %>%
+                                 y = ncdf4::ncvar_get(x, varid = "yc")) |>
                    dplyr::rename(x = .data$x1) )
 
   if (inherits(include, "character") && include[1] != "none"){
@@ -266,7 +269,7 @@ fvcom_elems <- function(x,
 
     do_mutate <- function(r, inc = "foo", x = NULL){
       r <- try(
-          r %>%
+          r |>
             dplyr::mutate(!!inc := ncdf4::ncvar_get(x, inc))
       )
       if (inherits(r, "try-catch")){
@@ -281,7 +284,7 @@ fvcom_elems <- function(x,
   }
 
    if (!is.null(index)){
-     r <- r %>%
+     r <- r |>
        dplyr::slice(index)
    }
 
@@ -289,7 +292,7 @@ fvcom_elems <- function(x,
      coords <- switch(tolower(what),
                       "xy" = c("x", "y"),
                       c("lon", "lat"))
-     r <- r %>%
+     r <- r |>
        sf::st_as_sf(coords = coords, crs = fvcom_crs(what))
    }
    r
@@ -369,7 +372,7 @@ fvcom_crs <- function(x,
             lonlat = "+proj=longlat +datum=NAD83")
 
   if (!missing(x)){
-    att <- ncdf4::ncatt_get(X, varid = 0)
+    att <- ncdf4::ncatt_get(x, varid = 0)
     if ("CoordinateProjection" %in% names(att)){
       proj[["xy"]] <- att$CoordinateProjection
       wkt[["xy"]] <- sf::st_crs(proj[['xy']])
@@ -400,7 +403,7 @@ get_vars <- function(x,
                     ...){
   lapply(vars,
     function(var){
-      z <- lut %>%
+      z <- lut |>
         dplyr::filter(.data$name == var)
       switch(tolower(z$dim1[1]),
         'nele' = get_elem_var(x, ...),
@@ -442,7 +445,7 @@ get_node_var <- function(x, var = 'zeta',
     return(r)
   }
 
-  v <- list_vars(x) %>%
+  v <- list_vars(x) |>
       dplyr::filter(.data$name == var[1])
   if (nrow(v) == 0) stop("variable not found:", var[1])
   if (v$dim1 != "node") stop("variable must have node as first dimension")
@@ -515,7 +518,7 @@ get_elem_var <- function(x, var = c("u", "v"),
     return(r)
   }
 
-  v <- list_vars(x) %>%
+  v <- list_vars(x) |>
       dplyr::filter(.data$name == var[1])
   if (nrow(v) == 0) stop("variable not found:", var[1])
   if (v$dim1[1] != "nele") stop("variable must have nele as first dimension")

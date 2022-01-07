@@ -1,0 +1,293 @@
+File http://www.smast.umassd.edu:8080/thredds/dodsC/FVCOM/NECOFS/Forecasts/NECOFS_FVCOM_OCEAN_SCITUATE_FORECAST.nc (NC_FORMAT_CLASSIC):
+
+     51 variables (excluding dimension variables):
+        int nprocs[]   
+            long_name: number of processors
+        int partition[nele]   
+            long_name: partition
+        float x[node]   
+            long_name: nodal x-coordinate
+            units: meters
+        float y[node]   
+            long_name: nodal y-coordinate
+            units: meters
+        float lon[node]   
+            long_name: nodal longitude
+            standard_name: longitude
+            units: degrees_east
+        float lat[node]   
+            long_name: nodal latitude
+            standard_name: latitude
+            units: degrees_north
+        float xc[nele]   
+            long_name: zonal x-coordinate
+            units: meters
+        float yc[nele]   
+            long_name: zonal y-coordinate
+            units: meters
+        float lonc[nele]   
+            long_name: zonal longitude
+            standard_name: longitude
+            units: degrees_east
+        float latc[nele]   
+            long_name: zonal latitude
+            standard_name: latitude
+            units: degrees_north
+        float h[node]   
+            long_name: Bathymetry
+            standard_name: sea_floor_depth_below_geoid
+            units: m
+            grid: Bathymetry_Mesh
+            coordinates: lat lon
+            type: data
+            mesh: fvcom_mesh
+            location: node
+        int nv[nele,three]   
+            long_name: nodes surrounding element
+            cf_role: face_node_connectivity
+            start_index: 1
+        int iint[time]   
+            long_name: internal mode iteration number
+        int Itime[time]   
+            units: days since 1858-11-17 00:00:00
+            format: modified julian day (MJD)
+            time_zone: UTC
+        int Itime2[time]   
+            units: msec since 00:00:00
+            time_zone: UTC
+        char Times[maxStrlen64,time]   
+            time_zone: UTC
+        float zeta[node,time]   
+            long_name: Water Surface Elevation
+            units: meters
+            standard_name: sea_surface_height_above_geoid
+            coordinates: time lat lon
+            type: data
+            missing_value: -999
+            field: elev, scalar
+            coverage_content_type: modelResult
+            mesh: fvcom_mesh
+            location: node
+        char file_date[maxStrlen64,time]   
+            time_zone: UTC
+        int nbe[nele,three]   
+            long_name: elements surrounding each element
+        int ntsn[node]   
+            long_name: #nodes surrounding each node
+        int nbsn[node,maxnode]   
+            long_name: nodes surrounding each node
+        int ntve[node]   
+            long_name: #elems surrounding each node
+        int nbve[node,maxelem]   
+            long_name: elems surrounding each node
+        float a1u[nele,four]   
+            long_name: a1u
+        float a2u[nele,four]   
+            long_name: a2u
+        float aw0[nele,three]   
+            long_name: aw0
+        float awx[nele,three]   
+            long_name: awx
+        float awy[nele,three]   
+            long_name: awy
+        float art2[node]   
+            long_name: Area of elements around a node
+        float art1[node]   
+            long_name: Area of Node-Base Control volume
+        float u[nele,siglay,time]   
+            long_name: Eastward Water Velocity
+            units: meters s-1
+            grid: fvcom_grid
+            type: data
+            missing_value: -999
+            field: ua, scalar
+            coverage_content_type: modelResult
+            standard_name: eastward_sea_water_velocity
+            coordinates: time siglay latc lonc
+            mesh: fvcom_mesh
+            location: face
+        float v[nele,siglay,time]   
+            long_name: Northward Water Velocity
+            units: meters s-1
+            grid: fvcom_grid
+            type: data
+            missing_value: -999
+            field: va, scalar
+            coverage_content_type: modelResult
+            standard_name: northward_sea_water_velocity
+            coordinates: time siglay latc lonc
+            mesh: fvcom_mesh
+            location: face
+        float ww[nele,siglay,time]   
+            long_name: Upward Water Velocity
+            units: meters s-1
+            grid: fvcom_grid
+            type: data
+            coverage_content_type: modelResult
+            standard_name: upward_sea_water_velocity
+            coordinates: time siglay latc lonc
+            mesh: fvcom_mesh
+            location: face
+        float ua[nele,time]   
+            long_name: Vertically Averaged x-velocity
+            units: meters s-1
+            grid: fvcom_grid
+            type: data
+            missing_value: -999
+            field: ua, scalar
+            coverage_content_type: modelResult
+            standard_name: barotropic_eastward_sea_water_velocity
+            coordinates: time latc lonc
+            mesh: fvcom_mesh
+            location: face
+        float va[nele,time]   
+            long_name: Vertically Averaged y-velocity
+            units: meters s-1
+            grid: fvcom_grid
+            type: data
+            missing_value: -999
+            field: va, scalar
+            coverage_content_type: modelResult
+            standard_name: barotropic_northward_sea_water_velocity
+            coordinates: time latc lonc
+            mesh: fvcom_mesh
+            location: face
+        float temp[node,siglay,time]   
+            long_name: temperature
+            standard_name: sea_water_potential_temperature
+            units: degrees_C
+            grid: fvcom_grid
+            coordinates: time siglay lat lon
+            type: data
+            coverage_content_type: modelResult
+            mesh: fvcom_mesh
+            location: node
+        float salinity[node,siglay,time]   
+            long_name: salinity
+            standard_name: sea_water_salinity
+            units: 1
+            grid: fvcom_grid
+            coordinates: time siglay lat lon
+            type: data
+            coverage_content_type: modelResult
+            mesh: fvcom_mesh
+            location: node
+        float uwind_speed[nele,time]   
+            long_name: Eastward Wind Velocity
+            standard_name: Wind Velocity
+            units: meters s-1
+            grid: fvcom_grid
+            type: data
+        float vwind_speed[nele,time]   
+            long_name: Northward Wind Velocity
+            standard_name: Wind Velocity
+            units: meters s-1
+            grid: fvcom_grid
+            type: data
+        int wet_nodes[node,time]   
+            long_name: Wet_Nodes
+            grid: fvcom_grid
+            type: data
+        int wet_cells[nele,time]   
+            long_name: Wet_Cells
+            grid: fvcom_grid
+            type: data
+        int flood_cells[nele,time]   
+            long_name: Flood_Cells
+            grid: fvcom_grid
+            type: data
+        int wet_nodes_prev_int[node,time]   
+            long_name: Wet_Nodes_At_Previous_Internal_Step
+            grid: fvcom_grid
+            type: data
+        int wet_cells_prev_int[nele,time]   
+            long_name: Wet_Cells_At_Previous_Internal_Step
+            grid: fvcom_grid
+            type: data
+        int wet_cells_prev_ext[nele,time]   
+            long_name: Wet_Cells_At_Previous_External_Step
+            grid: fvcom_grid
+            type: data
+        float hs[node,time]   
+            long_name: Significant Wave Height
+            units: meters
+            grid: fvcom_grid
+            type: data
+        float wdir[node,time]   
+            long_name: Wave Direction
+            units: degree
+            grid: fvcom_grid
+            type: data
+        float tpeak[node,time]   
+            long_name: Relative Peak Period
+            units: s
+            grid: fvcom_grid
+            type: data
+        float wlen[node,time]   
+            long_name: Wavelength
+            units: meter
+            grid: fvcom_grid
+            type: data
+        float qb[node,time]   
+            long_name: Fraction of Breaking Waves
+            units: meter
+            grid: fvcom_grid
+            type: data
+        int fvcom_mesh[]   
+            cf_role: mesh_topology
+            topology_dimension: 2
+            node_coordinates: lon lat
+            face_coordinates: lonc latc
+            face_node_connectivity: nv
+
+     9 dimensions:
+        time  Size:3433   *** is unlimited *** 
+            long_name: time
+            units: days since 1858-11-17 00:00:00
+            format: modified julian day (MJD)
+            time_zone: UTC
+            standard_name: time
+        four  Size:4 (no dimvar)
+        maxStrlen64  Size:64 (no dimvar)
+        maxelem  Size:9 (no dimvar)
+        maxnode  Size:11 (no dimvar)
+        nele  Size:11153 (no dimvar)
+        node  Size:5620 (no dimvar)
+        siglay  Size:10 
+            long_name: Sigma Layers
+            standard_name: ocean_sigma_coordinate
+            positive: up
+            valid_min: -1
+            valid_max: 0
+            formula_terms: sigma: siglay eta: zeta depth: h
+        three  Size:3 (no dimvar)
+
+    19 global attributes:
+        title: NECOFS (FVCOM) - Scituate - Latest Forecast
+        institution: School for Marine Science and Technology
+        source: FVCOM_3.0
+        history: model started at: 20/08/2021   11:22
+        references: http://fvcom.smast.umassd.edu, http://codfish.smast.umassd.edu
+        Conventions: CF-1.0, UGRID-1.0
+        CoordinateSystem: Cartesian
+        CoordinateProjection: init=nad83:1802
+        Tidal_Forcing: TIDAL ELEVATION FORCING IS OFF!
+        River_Forcing: THERE ARE NO RIVERS IN THIS MODEL
+        GroundWater_Forcing: GROUND WATER FORCING IS OFF!
+        Surface_Heat_Forcing: FVCOM variable surface heat forcing file:
+FILE NAME:wrf_for.nc
+SOURCE:wrf2fvcom version 0.14 (2007-07-19) (Bulk method: COARE 2.6Z)
+MET DATA START DATE:2021-08-19_18:00:00
+        Surface_Wind_Forcing: FVCOM variable surface Wind forcing:
+FILE NAME:wrf_for.nc
+SOURCE:wrf2fvcom version 0.14 (2007-07-19) (Bulk method: COARE 2.6Z)
+MET DATA START DATE:2021-08-19_18:00:00
+        Surface_PrecipEvap_Forcing: FVCOM periodic surface precip forcing:
+FILE NAME:wrf_for.nc
+SOURCE:wrf2fvcom version 0.14 (2007-07-19) (Bulk method: COARE 2.6Z)
+MET DATA START DATE:2021-08-19_18:00:00
+        cdm_data_type: any
+        summary: Latest forecast from the FVCOM Northeast Coastal Ocean Forecast System using high-resolution mesh covering the Scituate region
+        DODS.strlen: 26
+        DODS.dimName: DateStrLen
+        DODS_EXTRA.Unlimited_Dimension: time
