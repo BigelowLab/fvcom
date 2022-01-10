@@ -1,0 +1,270 @@
+File http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Archive/NECOFS_MASS_BAY/2020/mbn_202012.nc (NC_FORMAT_CLASSIC):
+
+     49 variables (excluding dimension variables):
+        int nprocs[]   
+            long_name: number of processors
+        int partition[nele]   
+            long_name: partition
+        float x[node]   
+            long_name: nodal x-coordinate
+            units: meters
+        float y[node]   
+            long_name: nodal y-coordinate
+            units: meters
+        float lon[node]   
+            long_name: nodal longitude
+            standard_name: longitude
+            units: degrees_east
+        float lat[node]   
+            long_name: nodal latitude
+            standard_name: latitude
+            units: degrees_north
+        float xc[nele]   
+            long_name: zonal x-coordinate
+            units: meters
+        float yc[nele]   
+            long_name: zonal y-coordinate
+            units: meters
+        float lonc[nele]   
+            long_name: zonal longitude
+            standard_name: longitude
+            units: degrees_east
+        float latc[nele]   
+            long_name: zonal latitude
+            standard_name: latitude
+            units: degrees_north
+        float h[node]   
+            long_name: Bathymetry
+            standard_name: sea_floor_depth_below_geoid
+            units: m
+            positive: down
+            grid: Bathymetry_Mesh
+            coordinates: x y
+            type: data
+        int nv[nele,three]   
+            long_name: nodes surrounding element
+        int iint[time]   
+            long_name: internal mode iteration number
+        int Itime[time]   
+            units: days since 1858-11-17 00:00:00
+            format: modified julian day (MJD)
+            time_zone: UTC
+        int Itime2[time]   
+            units: msec since 00:00:00
+            time_zone: UTC
+        char Times[maxStrlen64,time]   
+            time_zone: UTC
+        float zeta[node,time]   
+            long_name: Water Surface Elevation
+            units: meters
+            positive: up
+            standard_name: sea_surface_height_above_geoid
+            grid: SSH_Mesh
+            coordinates: x y
+            type: data
+        char file_date[maxStrlen64,time]   
+            time_zone: UTC
+        int nbe[nele,three]   
+            long_name: elements surrounding each element
+        int ntsn[node]   
+            long_name: #nodes surrounding each node
+        int nbsn[node,maxnode]   
+            long_name: nodes surrounding each node
+        int ntve[node]   
+            long_name: #elems surrounding each node
+        int nbve[node,maxelem]   
+            long_name: elems surrounding each node
+        float a1u[nele,four]   
+            long_name: a1u
+        float a2u[nele,four]   
+            long_name: a2u
+        float aw0[nele,three]   
+            long_name: aw0
+        float awx[nele,three]   
+            long_name: awx
+        float awy[nele,three]   
+            long_name: awy
+        float art2[node]   
+            long_name: Area of elements around a node
+        float art1[node]   
+            long_name: Area of Node-Base Control volume
+        float u[nele,siglay,time]   
+            long_name: Eastward Water Velocity
+            units: meters s-1
+            grid: fvcom_grid
+            type: data
+        float v[nele,siglay,time]   
+            long_name: Northward Water Velocity
+            units: meters s-1
+            grid: fvcom_grid
+            type: data
+        float omega[node,siglev,time]   
+            long_name: Vertical Sigma Coordinate Velocity
+            units: s-1
+            grid: fvcom_grid
+            type: data
+        float ww[nele,siglay,time]   
+            long_name: Upward Water Velocity
+            units: meters s-1
+            grid: fvcom_grid
+            type: data
+        float ua[nele,time]   
+            long_name: Vertically Averaged x-velocity
+            units: meters s-1
+            grid: fvcom_grid
+            type: data
+        float va[nele,time]   
+            long_name: Vertically Averaged y-velocity
+            units: meters s-1
+            grid: fvcom_grid
+            type: data
+        float temp[node,siglay,time]   
+            long_name: temperature
+            standard_name: sea_water_temperature
+            units: degrees_C
+            grid: fvcom_grid
+            coordinates: x y
+            type: data
+        float salinity[node,siglay,time]   
+            long_name: salinity
+            standard_name: sea_water_salinity
+            units: 1e-3
+            grid: fvcom_grid
+            coordinates: x y
+            type: data
+        float km[node,siglev,time]   
+            long_name: Turbulent Eddy Viscosity For Momentum
+            units: m 2 s-1
+            grid: fvcom_grid
+            coordinates: x y
+            type: data
+        float kh[node,siglev,time]   
+            long_name: Turbulent Eddy Viscosity For Scalars
+            units: m 2 s-1
+            grid: fvcom_grid
+            coordinates: x y
+            type: data
+        float kq[node,siglev,time]   
+            long_name: Turbulent Eddy Viscosity For Q2/Q2L
+            units: m 2 s-1
+            grid: fvcom_grid
+            coordinates: x y
+            type: data
+        float q2[node,siglev,time]   
+            long_name: Turbulent Kinetic Energy
+            units: m2 s-2
+            grid: fvcom_grid
+            coordinates: x y
+            type: data
+        float q2l[node,siglev,time]   
+            long_name: Turbulent Kinetic Energy X Turbulent Macroscale
+            units: m3 s-2
+            grid: fvcom_grid
+            coordinates: x y
+            type: data
+        float l[node,siglev,time]   
+            long_name: Turbulent Macroscale
+            units: m3 s-2
+            grid: fvcom_grid
+            coordinates: x y
+            type: data
+        int wet_nodes[node,time]   
+            long_name: Wet_Nodes
+            grid: fvcom_grid
+            type: data
+        int wet_cells[nele,time]   
+            long_name: Wet_Cells
+            grid: fvcom_grid
+            type: data
+        int wet_nodes_prev_int[node,time]   
+            long_name: Wet_Nodes_At_Previous_Internal_Step
+            grid: fvcom_grid
+            type: data
+        int wet_cells_prev_int[nele,time]   
+            long_name: Wet_Cells_At_Previous_Internal_Step
+            grid: fvcom_grid
+            type: data
+        int wet_cells_prev_ext[nele,time]   
+            long_name: Wet_Cells_At_Previous_External_Step
+            grid: fvcom_grid
+            type: data
+
+     10 dimensions:
+        time  Size:744   *** is unlimited *** 
+            long_name: time
+            units: days since 1858-11-17 00:00:00
+            format: modified julian day (MJD)
+            time_zone: UTC
+        four  Size:4 (no dimvar)
+        maxStrlen64  Size:64 (no dimvar)
+        maxelem  Size:9 (no dimvar)
+        maxnode  Size:11 (no dimvar)
+        nele  Size:165095 (no dimvar)
+        node  Size:98432 (no dimvar)
+        siglay  Size:10 
+            long_name: Sigma Layers
+            standard_name: ocean_sigma/general_coordinate
+            positive: up
+            valid_min: -1
+            valid_max: 0
+            formula_terms: sigma: siglay eta: zeta depth: h
+        siglev  Size:11 
+            long_name: Sigma Levels
+            standard_name: ocean_sigma/general_coordinate
+            positive: up
+            valid_min: -1
+            valid_max: 0
+            formula_terms: sigma:siglay eta: zeta depth: h
+        three  Size:3 (no dimvar)
+
+    18 global attributes:
+        title: FVCOM NECOFS MBN HINDCAST UPDATE
+        institution: School for Marine Science and Technology
+        source: FVCOM_3.0
+        history: Tue Aug 24 11:27:39 2021: ncrcat -d time,02208,02951 -p /data2/necofs/FVCOM/output_mbn_layer11/ mbn_col_0001.nc 2020/mbn_202012.nc
+Thu Sep  3 12:21:02 2020: ncrcat t.nc mbn_col_0001.nc mbn_col_0001_1.nc
+Thu Sep  3 12:20:16 2020: ncrcat -d time,1464,1487 mbn_col_0001.nc_0 t.nc
+Tue Jul  7 09:27:40 2020: ncrcat -d time,13128,13344 mbn_col_0001.nc mbn_col_0001_1.nc
+Wed Aug 21 15:22:46 2019: ncrcat -d time,8760,14400 mbn_col_0001.nc mbn_col_0002.nc
+Mon Jan  8 09:42:00 2018: ncrcat -d time,13248,13368 mbn_col_0001.nc mbn_col_0001_1.nc
+model started at: 29/06/2016   10:55
+        references: http://fvcom.smast.umassd.edu, http://codfish.smast.umassd.edu
+        Conventions: CF-1.0
+        CoordinateSystem: Cartesian
+        CoordinateProjection: init=nad83:1802
+        Tidal_Forcing: TIDAL ELEVATION FORCING IS OFF!
+        River_Forcing: THERE ARE 18 RIVERS IN THIS MODEL.
+RIVER INFLOW IS ON THE nodes WHERE TEMPERATURE AND SALINITY ARE calculated IN THE MODEL.
+THE FOLLOWING RIVER NAMES ARE USED:
+Merrimac_MA
+Spicket_MA
+Lamprey_NH
+Winnicut_NH
+Exeter_NH
+Cocheco_NH
+Isinglass_NH
+Paskamanset_MA
+Quashnet_MA
+Jones_MA
+Indian_Head_MA
+Neponset_MA
+Charles_MA
+Aberjona_MA
+Alewife_MA
+Saugus_MA
+Ipswich_MA
+Parker_MA
+        GroundWater_Forcing: GROUND WATER FORCING IS OFF!
+        Surface_Heat_Forcing: FVCOM variable surface heat forcing file:
+FILE NAME:wrf_for.nc
+SOURCE:wrf2fvcom version 0.13 (2007-07-19) (Bulk method: COARE 2.6Z)
+MET DATA START DATE:2016-06-19_00:00:00
+        Surface_Wind_Forcing: FVCOM variable surface Wind forcing:
+FILE NAME:wrf_for.nc
+SOURCE:wrf2fvcom version 0.13 (2007-07-19) (Bulk method: COARE 2.6Z)
+MET DATA START DATE:2016-06-19_00:00:00
+        Surface_PrecipEvap_Forcing: SURFACE PRECIPITATION FORCING IS OFF
+        nco_openmp_thread_number: 1
+        DODS.strlen: 26
+        DODS.dimName: DateStrLen
+        DODS_EXTRA.Unlimited_Dimension: time

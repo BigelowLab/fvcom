@@ -136,7 +136,8 @@ Retriev one or more random points
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{FVCOM_Physics$random_points(
   n = 1,
-  select_time = c("first", "last", "random")[1]
+  select_time = c("first", "last", "random")[1],
+  select_z = c("random", "surface", "bottom")[1]
 )}\if{html}{\out{</div>}}
 }
 
@@ -146,6 +147,9 @@ Retriev one or more random points
 \item{\code{n}}{numeric, the number of points to generate}
 
 \item{\code{select_time}}{character, one of 'first' (default), 'last' or 'random'}
+
+\item{\code{select_z}}{numeric or character.  If character then 'random' (default), 'surface', 'bottom'.
+If numeric then you specify your own in \code{zvar} units}
 }
 \if{html}{\out{</div>}}
 }

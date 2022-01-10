@@ -11,6 +11,7 @@ particle_track(
   tmax = 3600 * 12,
   reverse = FALSE,
   drag = c(0, 0, 0),
+  fixed_z = FALSE,
   show_progress = FALSE,
   verbose = FALSE,
   filename = c("particle_track.gpkg", NA)[2],
@@ -32,6 +33,9 @@ model.  See \code{\link{random_point}} to set the seed with other timestamps}
 
 \item{drag}{numeric, a three element vector of drag factors in [x, y, z], like a sinking rate in z.
 Drag units must be the same as the units of \code{u}, \code{v}, and \code{ww}.}
+
+\item{fixed_z}{logical, if TRUE then depths are fixed to the initial depths, and 
+\code{drag} is truncated to two elements.}
 
 \item{show_progress}{logical, if TRUE then show a progress bar}
 

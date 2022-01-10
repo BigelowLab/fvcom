@@ -1,0 +1,53 @@
+---
+title: "FVCOM"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Convenient access to [FVCOM](http://fvcom.smast.umassd.edu/fvcom/)
+datasets from R.
+
+### Background
+
+[FVCOM](http://fvcom.smast.umassd.edu/fvcom/) produces ocean circulation
+models on an irregular mesh. Here is the [user
+manual](http://fvcom.smast.umassd.edu/wp-content/uploads/2013/11/MITSG_12-25.pdf).
+
+As an example, [NECOFS](http://fvcom.smast.umassd.edu/necofs/) leverages
+this mesh to deliver models for the Gulf of Maine, Mass coastal waters
+and a small number of estuaries. NECOFS provides an [interactive web
+map](http://134.88.228.119:8080/fvcomwms/)
+
+## Requirements
+
+ + [R 4.1+]()
+  + [grDevices]()
+  + [graphics]()
+  + [stats]()
+  + [rlang]()
+  + [ncdf4]()
+  + [tibble]()
+  + [dplyr]()
+  + [raster]()
+  + [sf]()
+  + [fasterize]()
+  + [locate]() # Not available on CRAN
+
+You can include R code in the document as follows:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

@@ -100,7 +100,7 @@ plot_track <- function(p, X = NULL,
                      add = TRUE)
                 plot(sf::st_geometry(x |> dplyr::slice(c(1,dplyr::n()))),
                      col = cols[i+1],
-                     pch = c(1, 19),
+                     pch = c(1, 19),  # open = start, closed = end
                      cex = 1.5,
                      add = TRUE)
                 p

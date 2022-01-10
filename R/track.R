@@ -11,12 +11,15 @@
 #    model.  See \code{\link{random_point}} to set the seed with other timestamps
 #  @param drag numeric, a three element vector of drag factors in [x, y, z], like a sinking rate in z.
 #    Drag units must be the same as the units of \code{u}, \code{v}, and \code{ww}.
+#  @param fixed_z logical, if TRUE then depths are fixed to the initial depths, and 
+#   \code{drag} is truncated to two elements.
 #  @return sf object of type POINT
 .multi_track <- function(X, P0 = X$random_points(n = 2),
                          tstep = 60,
                          tmax = 3600 * 12,
                          reverse = FALSE,
                          drag = c(0,0,0),
+                         fixed_z = FALSE,
                          show_progress = FALSE,
                          verbose = FALSE){
   if (FALSE){
@@ -25,8 +28,14 @@
     tmax = 3600*10
     reverse = FALSE
     drag = c(0,0,0)
+    fixed_z = TRUE
     show_progress = FALSE
     verbose = TRUE
+  }
+  
+  if (fixed_z){
+    fixed_depth <- as.vector(sf::st_coordinates(P0)[,'Z'])
+    drag <- drag[1:2]
   }
   
   TIMES <- X$get_time() # X$NC$dim$time$vals
@@ -100,16 +109,23 @@
                      NULL
                    }
                  })
+
     
     # translate (aka affine shift)
     dd <- lapply(track_iter,
                  function(i){
                    if(OK[i]){
-                     pn[[i]] + ((uvw[[i]][,2:4] + drag) * tstep)
+                     if (fixed_z){
+                       r <- c(pn[[i]][1:2] + ((uvw[[i]][,2:3] + drag) * tstep),
+                              fixed_depth[i])
+                     } else {
+                       r <- pn[[i]] + ((uvw[[i]][,2:4] + drag) * tstep)
+                     }
                    } else {
-                     NULL
+                     r <- NULL
                    }
-                 })
+                  r
+                  })
     
     # convert to sfc 
     gg <- lapply(track_iter,
@@ -193,6 +209,8 @@
 #'   model.  See \code{\link{random_point}} to set the seed with other timestamps
 #' @param drag numeric, a three element vector of drag factors in [x, y, z], like a sinking rate in z.
 #'   Drag units must be the same as the units of \code{u}, \code{v}, and \code{ww}.
+#' @param fixed_z logical, if TRUE then depths are fixed to the initial depths, and 
+#'   \code{drag} is truncated to two elements.
 #' @param overwrite logical, if TRUE allow overwriting of existing files
 #' @return sf object of type POINT
 particle_track <- function(X, P0 = X$random_points(),
@@ -200,6 +218,7 @@ particle_track <- function(X, P0 = X$random_points(),
                            tmax = 3600 * 12,
                            reverse = FALSE,
                            drag = c(0,0,0),
+                           fixed_z = FALSE,
                            show_progress = FALSE,
                            verbose = FALSE, 
                            filename = c("particle_track.gpkg", NA)[2],
@@ -211,6 +230,7 @@ particle_track <- function(X, P0 = X$random_points(),
     tmax = 600
     reverse = FALSE
     drag = c(0,0,0)
+    fixed+z = FALSE
     show_progress = FALSE
     verbose = TRUE
     filename = c("particle_track.gpkg", NA)[1]
@@ -221,6 +241,7 @@ particle_track <- function(X, P0 = X$random_points(),
                      tmax = tmax,
                      reverse = reverse,
                      drag = drag,
+                     fixed_z = fixed_z, 
                      show_progress = show_progress,
                      verbose = verbose)
   

@@ -1,4 +1,4 @@
-SacoBay_Physics <-  R6::R6Class("SacoBay_Physics",
+Global_Physics <-  R6::R6Class("Global_Physics",
                                 
   inherit = FVCOM_Physics, 
   
@@ -15,9 +15,9 @@ SacoBay_Physics <-  R6::R6Class("SacoBay_Physics",
 #' @param filename character either a filename or OpenDAP URL
 #' @param ... other arguments passed to \code{FVCOM_Physics$new(filename, ...)}
 #' @return FVCOM_Physics R6 Reference Object
-SacoBayPhysics <- function(filename = file.path("http://www.smast.umassd.edu:8080",
+GlobalPhysics <- function(filename = file.path("http://www.smast.umassd.edu:8080",
                                               "thredds/dodsC/models/fvcom/NECOFS/Forecasts",
-                                              "NECOFS_FVCOM_OCEAN_SACO_FORECAST.nc"),
+                                              "NECOFS_FVCOM_OCEAN_GLOBAL_FORECAST.nc"),
                          ...){
-  SacoBay_Physics$new(filename, ...)
+  Global_Physics$new(filename, ...)
 }

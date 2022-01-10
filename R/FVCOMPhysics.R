@@ -46,7 +46,7 @@ FVCOM_Physics <- R6::R6Class("FVCOM_Physics",
       cat(class(self)[1], "class:", self$filename, "\n")
       cat("  CRS        :", self$get_crs(), "\n")
       cat("  zvar       :", self$zvar, "\n")
-      cat("  t0         :", self$t0, "\n")
+      cat("  t0         :", format(self$t0, "%Y-%m-%dT%H:%M:%S %Z"), "\n")
       cat("  n timesteps:", self$NC$dim$time$len, "\n")
       cat("  n elements :", self$NC$dim$nele$len, "\n")
       cat("  n nodes    :", self$NC$dim$node$len, "\n")
@@ -80,10 +80,17 @@ FVCOM_Physics <- R6::R6Class("FVCOM_Physics",
     #' @description Retriev one or more random points
     #' @param n numeric, the number of points to generate
     #' @param select_time character, one of 'first' (default), 'last' or 'random'
+    #' @param select_z numeric or character.  If character then 'random' (default), 'surface', 'bottom'.
+    #'   If numeric then you specify your own in \code{zvar} units
     #' @return sf object of class POINT
     random_points = function(n = 1, 
-                             select_time = c("first", "last", "random")[1]){
-      random_point(self, n = n, select_time = select_time, zvar = self$zvar)
+                             select_time = c("first", "last", "random")[1],
+                             select_z = c("random", "surface", "bottom")[1]){
+      random_point(self, 
+                   n = n, 
+                   select_time = select_time, 
+                   zvar = self$zvar, 
+                   select_z = select_z)
     },
     
     #' @description find proxy for characteristic size based upon element size
@@ -200,11 +207,15 @@ FVCOM_Physics <- R6::R6Class("FVCOM_Physics",
 #' @param X FVCOM_Physics object
 #' @param n numeric the number of random points to generate
 #' @param select_time character, one of 'first' (default), 'last' or 'random'
+#' @param select_z numeric or character.  If character then 'random' (default), 'surface', 'bottom'.
+#'   If numeric then you specify your own in \code{zvar} units. If numeric then the
+#'   user must provide \code{1} (recycled across all points) or \code{n} values.
 #' @param zvar character, the name of the varoiable to use for z locations 
 #' @return sf POINT XYZ object with \code{n} features
 random_point <- function(X, 
                          n = 1,
                          select_time = c("first", "last", "random")[1],
+                         select_z = c("random", "surface", "bottom")[1],
                          zvar = c('siglev', 'siglay')[1]) {
   
   stopifnot(zvar[1] %in% names(X$NC$dim))
@@ -223,8 +234,10 @@ random_point <- function(X,
     return(r)
   }
   
+  # the z-range
   zr <- range(X$NC$dim[[zvar]]$vals[1,])
   
+  # get the seed points
   p <- sf::st_sample(X$M, n)
   elem <- sf::st_contains(X$M, p, sparse = FALSE) |>
     apply(2, which)
@@ -235,9 +248,23 @@ random_point <- function(X,
                      "last" = times[length(times)],
                      rand(range(times),n))
   
+  # z values (siglay or siglev) are positive upward,
+  # so surface/bottom look backwardsy to my eye,
+  # if user provides numerics then use those
+  if (inherits(select_z, 'character')){
+    z <- switch(select_z[1],
+                'surface' = zr[2],
+                'bottom' = zr[1],
+                rand(zr, n))
+  } else {
+    # the user must provide either 1 or n values
+    # we'll let dplyr::mutate catch that later
+    z <- select_z
+  }
+  
   p <- sf::st_coordinates(p) |>
     dplyr::as_tibble() |>
-    dplyr::mutate(Z = rand(zr, n),
+    dplyr::mutate(Z = z,
                   time = thistime, 
                   elem = elem) |>
     dplyr::relocate(dplyr::contains("elem"), .before = 1) |>

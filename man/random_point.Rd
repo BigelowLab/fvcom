@@ -8,6 +8,7 @@ random_point(
   X,
   n = 1,
   select_time = c("first", "last", "random")[1],
+  select_z = c("random", "surface", "bottom")[1],
   zvar = c("siglev", "siglay")[1]
 )
 }
@@ -17,6 +18,10 @@ random_point(
 \item{n}{numeric the number of random points to generate}
 
 \item{select_time}{character, one of 'first' (default), 'last' or 'random'}
+
+\item{select_z}{numeric or character.  If character then 'random' (default), 'surface', 'bottom'.
+If numeric then you specify your own in \code{zvar} units. If numeric then the
+user must provide \code{1} (recycled across all points) or \code{n} values.}
 
 \item{zvar}{character, the name of the varoiable to use for z locations}
 }
