@@ -1,8 +1,13 @@
+#' A class for navigating FVCOM datasets
+#' 
+#' @description R6 base class for Saco Bay 
+#' @export
 SacoBay_Physics <-  R6::R6Class("SacoBay_Physics",
                                 
   inherit = FVCOM_Physics, 
   
   public = list(
+    #' @param ... arguments for FVCOM_physics
     initialize = function(...){
       super$initialize(...)
     }

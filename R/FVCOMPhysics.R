@@ -126,7 +126,7 @@ FVCOM_Physics <- R6::R6Class("FVCOM_Physics",
     #' }
     mesh_metrics = function(ofile = c(NA, file.path(dirname(self$filename), "mesh-elem-metrics.csv.gz"))[1]){
       self$M$area <- sf::st_area(self$M)
-      self$M$char_dim <- char_size(self$M)
+      self$M$char_dim <- self$char_size()
       get_abs_max <- function(x){max(abs(x), na.rm = T)}
       self$M$max_u <- apply(ncdf4::ncvar_get(self$NC, "u"), 1, get_abs_max)
       self$M$max_v <- apply(ncdf4::ncvar_get(self$NC, "v"), 1, get_abs_max)
@@ -200,6 +200,72 @@ FVCOM_Physics <- R6::R6Class("FVCOM_Physics",
                           
 ) #FVCOMPhysics
 
+
+#' Given a set of points within the mesh, interpolate bathymetry.
+#'
+#' We could just find the mean bathymetry of the three nodes surrounding each element,
+#' but that assumes the point in in the centroid of the element which is likely to 
+#' not be the case.  So, this uses simple plane geometry to interpolate the depth
+#' at an arbitrary location within the mesh.
+#'
+#' @export
+#' @param p sf POINT object
+#' @param X FVCOMPhysics object with an element mesh
+#' @param var character the variable to interpolate (bathymetry is h)
+#' @return numeric vector of interpolates, NA where points fall outside of the mesh
+interpolate_var <- function(p, X, var = 'h'){
+  
+  # boolean vector of which elements contain each point 
+  # which we then convert to indices
+  ix <- sf::st_intersects(p,X$M)
+  ix_elems <- sapply(seq_len(length(ix)),
+                       function(i) {
+                         r <- unlist(ix[[i]])
+                         if (length(r) == 0) r <- NA_integer_
+                         r}
+                     )
+  
+  outside <- is.na(ix_elems)
+  if (any(outside)){
+    warning("one or more points outside of mesh")
+  }
+  
+  # for each element
+  #  get the nodes
+  #   for each node get the depth
+  #   interpolate the depth at point p
+  #  http://paulbourke.net/geometry/pointlineplane/
+  # Ax + By + Cz + D = 0
+  # A = y1 (z2 - z3) + y2 (z3 - z1) + y3 (z1 - z2)
+  # B = z1 (x2 - x3) + z2 (x3 - x1) + z3 (x1 - x2)
+  # C = x1 (y2 - y3) + x2 (y3 - y1) + x3 (y1 - y2)
+  # - D = x1 (y2 z3 - y3 z2) + x2 (y3 z1 - y1 z3) + x3 (y1 z2 - y2 z1)
+  # 
+  # z <- (Ax + By + D)/(-C)
+  
+  get_interp_var <- function(i, p, X, ix_elems){
+    ix_elem <- ix_elems[i]
+    m <- X$M |> dplyr::slice(ix_elem) 
+    ix_nodes <- c(m$p1, m$p2, m$p3)
+    nodes <- fvcom_nodes(X$NC, index = ix_nodes, what = "xy") |>
+      dplyr::left_join(get_node_var(X$NC, var = "h", node = ix_nodes), by = "node")
+    x <- nodes$x
+    y <- nodes$y
+    z <- nodes$h
+    A <- y[1]*(z[2] - z[3]) + y[2]*(z[3] - z[1]) + y[3]*(z[1] - z[2])
+    B <- z[1]*(x[2] - x[3]) + z[2]*(x[3] - x[1]) + z[3]*(x[1] - x[2])
+    C <- x[1]*(y[2] - y[3]) + x[2]*(y[3] - y[1]) + x[3]*(y[1] - y[2])
+    D <- -(x[1]*(y[2]*z[3] - y[3]*z[2]) + x[2]*(y[3]*z[1] - y[1]*z[3]) + x[3]*(y[1]*z[2] - y[2]*z[1]))
+    xy <- sf::st_coordinates(p |> dplyr::slice(i))
+    (A*xy[1,'X'] + B*xy[1,"Y"] + D)/(-C)
+  }
+  
+  r <- rep(NA_real_, nrow(p))
+  for (i in seq_len(nrow(p))){
+    if (!outside[i]) r[i] <- get_interp_var(i, p, X, ix_elems)
+  }
+  r
+}
 
 #' Generate  listing of one or more random points
 #' 

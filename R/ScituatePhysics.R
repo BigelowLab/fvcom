@@ -1,8 +1,13 @@
+#' A class for navigating  FVCOM datasets
+#' 
+#' @description R6 base class for Scituate Inundation 
+#' @export
 Scituate_Physics <-  R6::R6Class("Scituate_Physics",
                                 
   inherit = FVCOM_Physics, 
   
   public = list(
+    #' @param ... arguments for FVCOM_physics
     initialize = function(...){
       super$initialize(...)
       self$zvar = "siglay"

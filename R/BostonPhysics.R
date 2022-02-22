@@ -1,7 +1,12 @@
+#' A class for navigating  FVCOM datasets
+#' 
+#' @description R6 base class for Boston Innundation 
+#' @export
 Boston_Physics <-  R6::R6Class("Boston_Physics",
                                 
-  inherit = FVCOM_Physics, 
+  inherit = FVCOM_Physics,
   
+  #' @param ... arguments for FVCOM_physics
   public = list(
     initialize = function(...){
       super$initialize(...)

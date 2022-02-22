@@ -1,8 +1,13 @@
+#' A class for navigating  FVCOM datasets
+#' 
+#' @description R6 base class for Hampton Inundation 
+#' @export
 Hampton_Physics <-  R6::R6Class("Hampton_Physics",
                                 
   inherit = FVCOM_Physics, 
   
   public = list(
+    #' @param ... arguments for FVCOM_physics
     initialize = function(...){
       super$initialize(...)
     }

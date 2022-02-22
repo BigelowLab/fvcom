@@ -1,7 +1,11 @@
+#' A class for navigating  FVCOM datasets
+#' 
+#' @description R6 base class for Mass Bay 
+#' @export
 MassBay_Physics <-  R6::R6Class("MassBay_Physics",
                                 
   inherit = FVCOM_Physics, 
-  
+  #' @param ... arguments for FVCOM_physics
   public = list(
     initialize = function(...){
       super$initialize(...)

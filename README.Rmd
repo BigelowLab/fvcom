@@ -23,24 +23,39 @@ map](http://134.88.228.119:8080/fvcomwms/)
 
 ## Requirements
 
- + [R 4.1+]()
-  + [grDevices]()
-  + [graphics]()
-  + [stats]()
-  + [rlang]()
-  + [ncdf4]()
-  + [tibble]()
-  + [dplyr]()
-  + [raster]()
-  + [sf]()
-  + [fasterize]()
-  + [locate]() # Not available on CRAN
+ + [R 4.1+](https://www.r-project.org/)
+  + [rlang](https://cran.r-project.org/package=rlang)
+  + [ncdf4](https://cran.r-project.org/package=ncfd4)
+  + [tibble](https://cran.r-project.org/package=tibble)
+  + [dplyr](https://cran.r-project.org/package=dplyr)
+  + [raster](https://cran.r-project.org/package=raster)
+  + [sf](https://cran.r-project.org/package=sf)
+  + [fasterize](https://cran.r-project.org/package=fasterize)
+  + [locate](https://cran.r-project.org/package=ncfd4) # Not available on CRAN
 
-You can include R code in the document as follows:
 
-```{r cars}
-summary(cars)
-```
+#### Gulf of Maine centric products
+
+There are a number of models with a Gulf of Maine focus including
+[forecasts](http://www.smast.umassd.edu:8080/thredds/forecasts.html) and
+[archives](http://www.smast.umassd.edu:8080/thredds/catalog/models/fvcom/NECOFS/Archive/NECOFS_GOM/catalog.html).  For each of these OPeNDAP resources we have provided a simple interface class.
+
+  + [GOM](http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Forecasts/NECOFS_GOM4_FORECAST.nc.html) `GOMPhysics()`
+  
+  + [Boston](http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Forecasts/NECOFS_FVCOM_OCEAN_BOSTON_FORECAST.nc.html) `BostonPhysics()`
+  
+  + [Scituate](http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Forecasts/NECOFS_FVCOM_OCEAN_SCITUATE_FORECAST.nc.html) `ScituatePhysics()`
+  
+  + [Mass Bay](http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Forecasts/NECOFS_FVCOM_OCEAN_MASSBAY_FORECAST.nc.html) `MassBayPhysics()`
+  
+  + [Saco Bay](http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Forecasts/NECOFS_FVCOM_OCEAN_SACO_FORECAST.nc.html) `SacoBayPhysics()`
+  
+  + [Hampton](http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Forecasts/NECOFS_FVCOM_OCEAN_HAMPTON_FORECAST.nc.html) `HamptonPhysics()`
+  
+  + [Global](http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Forecasts/NECOFS_FVCOM_OCEAN_GLOBAL_FORECAST.nc.html) `GlobalPhysics()`
+  
+
+
 
 ## Including Plots
 
