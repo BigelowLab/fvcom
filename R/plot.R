@@ -49,68 +49,152 @@ plot_mesh_geometry <- function(mesh,
 #' Plot a track or series of tracks
 #' 
 #' @export
-#' @param p sf POINT tibble.  If it has a 'track' variable (column) then each is plotted
+#' @param x sf POINT tibble.  If it has a 'track' variable (column) then each is plotted
 #' @param X NE_Physics object
 #' @param title character plot title
 #' @param filename character or NA, optional output file as PNG
 #' @param ext object that defines plot extent, by default \code{p} See \code{\link[sf]{plot}}
+#' @param legend_pos character, location of legend, see \code{graphics\link[graphics]{legend}},
+#'   set to "none" to not show legend.  Default is "topleft"
 #' @param ... other arguments for \code{\link[grDevices]{png}} 
-plot_track <- function(p, X = NULL, 
+plot_track <- function(x, X = NULL, 
                        title = "Particle Track",
                        filename = c(NA,"particle_track.png")[1],
-                       ext = p,
+                       ext = x,
+                       legend_pos = c("none", "topleft")[2],
                        ...){
     
-    cols <- grDevices::palette.colors()
-    if (!is.na(filename[1])){
-        grDevices::png(filename[1], ...)
-    }
-    
-    plot(sf::st_geometry(ext),
-         xlab = 'Easting (m)', 
-         ylab  = 'Northing (m)',
-         axes = TRUE,
-         main = title,
-         extent = ext,
-         col = "#FFFFFF")
-    
-    if (!is.null(X)){
-        plot(sf::st_geometry(X$M),
-             border = cols[['gray']],
-             add = TRUE)
-    }
-    
-    if (!("track" %in% colnames(p))){
-        p <- p |>
-            dplyr::mutate(track = 1)
-    }
-    
-    n <- length(unique(p$track))
-    colors <- cols[p$track]
-    p <- p |>
-        dplyr::group_by(.data$track) |>
-        dplyr::group_map(
-            function(x, key){
-                i <- x$track[1]
-                plot(sf::st_geometry(x),
-                     col = cols[i+1],
-                     pch = ".",
-                     type = "l",
-                     lwd = 2,
-                     add = TRUE)
-                plot(sf::st_geometry(x |> dplyr::slice(c(1,dplyr::n()))),
-                     col = cols[i+1],
-                     pch = c(1, 19),  # open = start, closed = end
-                     cex = 1.5,
-                     add = TRUE)
-                p
-            }, .keep = TRUE ) 
-    
-    
-    if (!is.na(filename[1])){
-        ok <- grDevices::dev.off()
-    }
-    invisible(NULL)
+  opar <- par(no.readonly = TRUE)
+  on.exit({
+    par(opar)
+  })
+  
+  legend_pos <- tolower(legend_pos[1])
+  
+  cols <- grDevices::palette.colors()
+  if (!is.na(filename[1])){
+      grDevices::png(filename[1], ...)
+  }
+  
+  plot(sf::st_geometry(ext),
+       xlab = 'Easting (m)', 
+       ylab  = 'Northing (m)',
+       axes = TRUE,
+       main = title,
+       extent = ext,
+       col = "#FFFFFF",
+       reset = legend_pos == "none")
+  
+  if (!is.null(X)){
+      plot(sf::st_geometry(X$M),
+           border = cols[['gray']],
+           add = TRUE)
+  }
+  
+  if (!("track" %in% colnames(x))){
+      x <- x |>
+          dplyr::mutate(track = 1)
+  }
+  
+  n <- length(unique(x$track))
+  colors <- cols[x$track]
+  ucols <- cols[seq_len(n)+1]
+  x <- x |>
+      dplyr::group_by(.data$track) |>
+      dplyr::group_map(
+          function(x, key){
+              i <- x$track[1]
+              plot(sf::st_geometry(x),
+                   col = cols[i+1],
+                   pch = ".",
+                   type = "l",
+                   lwd = 2,
+                   add = TRUE)
+              plot(sf::st_geometry(x |> dplyr::slice(c(1,dplyr::n()))),
+                   col = cols[i+1],
+                   pch = c(1, 19),  # open = start, closed = end
+                   cex = 1.5,
+                   add = TRUE)
+              x
+          }, .keep = TRUE ) 
+  
+  legend_pos <- tolower(legend_pos[1])
+  if (legend_pos != "none"){
+    legend(legend_pos,
+           legend = as.character(seq_along(ucols)),
+           col = ucols,
+           pch = 19,
+           lwd = 2,
+           bty = "n",
+           pt.cex = 2)
+  }
+  
+  if (!is.na(filename[1])){
+      ok <- grDevices::dev.off()
+  }
+  invisible(NULL)
 }
 
-
+#' Plot one or more tracks by depth (Z)
+#' 
+#' @export
+#' @param x sf POINT object with one or more tracks
+#' @param title char, title to apply to the plot
+#' @param zvar char, the name of the zvariable
+#' @param xvar char, the name of the independent variable ("x")
+#' @param filename NA or char, for optional output
+#' @param ... other arguments for the graphics device (\code{\link[grDevices]{pdf}} or \code{\link[grDevices]{png}})
+plot_z <- function(x,
+                   title = "Particle Track - Z",
+                   zvar = c("sigma", "depth", "Z")[3],
+                   xvar = c("path_distance", "time")[1],
+                   filename = c(NA,"track-Z.png")[1],
+                   ...){
+  
+  zvar <- zvar[[1]]
+  xvar <- xvar[[1]]
+  if(!(zvar %in% colnames(x))) stop("input must have zvar variable:", zvar)
+  if(!(xvar %in% colnames(x))) stop("input must have xvar variable:", xvar)
+  
+  cols <- grDevices::palette.colors()
+  
+  if (!('track' %in% colnames(x))){
+    x <- dplyr::mutate(track = 1, .before = 1)
+  }
+  
+  xlim <- range(x[[xvar[1]]], na.rm = TRUE)
+  ylim <- range(x[[zvar]], na.rm = TRUE)
+  
+  if (!is.na(filename[1])){
+    if (grepl(".pdf", filename[1], fixed = TRUE)){
+      grDevices::pdf(filename[1], ...)
+    } else {
+      grDevices::png(filename[1], ...)
+    }
+  }
+  
+  
+  plot(xlim, ylim, ylim = ylim, type = "n",
+       xlab = xvar, ylab = zvar, main = title)
+  x <- x |>
+    dplyr::group_by(.data$track) |>
+    dplyr::group_map(
+      function(x, key){
+        i <- as.numeric(as.character(x$track[1]))
+        lines(x[[xvar]], x[[zvar]],
+              col = cols[i+1],
+              type = "l",
+              lwd = 2)
+        y <- x |> dplyr::slice(c(1,dplyr::n()))
+        points(y[[xvar]], y[[zvar]],
+               col = cols[i+1],
+               pch = c(1, 19),  # open = start, closed = end
+               cex = 1.5)
+        x
+      }, .keep = TRUE ) 
+  
+  if (!is.na(filename[1])){
+    ok <- grDevices::dev.off()
+  }
+  invisible(NULL)
+}

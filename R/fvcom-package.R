@@ -6,5 +6,5 @@
 #' @aliases fvcom
 #' @importFrom stats runif
 #' @importFrom rlang !! := .data
-#' @importFrom graphics plot text
+#' @importFrom graphics plot text legend lines par points
 NULL

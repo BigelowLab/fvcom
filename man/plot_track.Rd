@@ -5,16 +5,17 @@
 \title{Plot a track or series of tracks}
 \usage{
 plot_track(
-  p,
+  x,
   X = NULL,
   title = "Particle Track",
   filename = c(NA, "particle_track.png")[1],
-  ext = p,
+  ext = x,
+  legend_pos = c("none", "topleft")[2],
   ...
 )
 }
 \arguments{
-\item{p}{sf POINT tibble.  If it has a 'track' variable (column) then each is plotted}
+\item{x}{sf POINT tibble.  If it has a 'track' variable (column) then each is plotted}
 
 \item{X}{NE_Physics object}
 
@@ -23,6 +24,9 @@ plot_track(
 \item{filename}{character or NA, optional output file as PNG}
 
 \item{ext}{object that defines plot extent, by default \code{p} See \code{\link[sf]{plot}}}
+
+\item{legend_pos}{character, location of legend, see \code{graphics\link[graphics]{legend}},
+set to "none" to not show legend.  Default is "topleft"}
 
 \item{...}{other arguments for \code{\link[grDevices]{png}}}
 }

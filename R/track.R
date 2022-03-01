@@ -257,3 +257,100 @@ particle_track <- function(X, P0 = X$random_points(),
   P
 }
 
+#' Extract Z from coordinates and add as a variable for one or more tracks
+#' 
+#' @export
+#' @param x sf POINT object, with a \code{track} column.
+#' @return the input sf POINT object with added \code{Z} variable (column)
+track_add_z <- function(x){
+  xyz <- sf::st_coordinates(x)
+  nc <- ncol(x)
+  dplyr::mutate(x, Z = xyz[,'Z', drop = TRUE], .before = nc)
+}
+
+#' Append the distance between points along a one or more tracks in a data frame
+#' 
+#' @export
+#' @param x sf POINT object, with a \code{track} column.  If the \code{track} column is not 
+#'   present one is added.
+#' @param by_element logical, defaults to TRUE, see \code{\link[sf]{st_distance}}
+#' @param as_vector logical, to return a numeric vector otherwise an \code{units}
+#'   object is returned
+#' @param cumulative logical, if TRUE retrieve the cumulative distance.  Ignored
+#'   if \code{as_vector = FALSE}
+#' @param ... other arguments for \code{\link[sf]{st_distance}}
+#' @return the input sf POINT object with added \code{path_distance} variable (column)
+track_add_distance <- function(x, 
+                               by_element = TRUE, 
+                               as_vector = TRUE, 
+                               cumulative = TRUE,
+                               ...){
+  
+  if (!('track' %in% names(x))){
+    x <- dplyr::mutate(track = 1, .before = 1)
+  }
+  
+  do_one <- function(x, by_element = TRUE, as_vector = TRUE, cumulative = TRUE, ...){
+    y <- dplyr::bind_rows(dplyr::slice(x, 2:nrow(x)), dplyr::slice(x, 1))
+    d <- sf::st_distance(x, y, by_element = by_element, ...)
+    if (as_vector){
+      d <- as.vector(d)
+      d <- c(0, d[-length(d)])
+      if (cumulative) d <- cumsum(d)
+    }
+    dplyr::mutate(x, path_distance = d, .before = dplyr::all_of("geometry"))
+  }
+  
+  dplyr::group_by(x, .data$track) |>
+    dplyr::group_map(do_one, .keep = TRUE,
+                     by_element = by_element, 
+                     as_vector = as_vector, 
+                     cumulative = cumulative,
+                     ...) |>
+    dplyr::bind_rows()
+}
+
+#' Write a track to file
+#' 
+#' @export
+#' @param x sf track object
+#' @param filename character, the filename to write to
+#' @param overwrite logical, if TRUE overwrite existing file
+#' @param crs NA or crs-castable object (like 4326). If not NA then
+#'   transform to the crs just before writing.  (geojson only accepts 4326-ish)
+#' @param ... other arguments for \code{\link[sf]{write_sf}}
+#' @return the input object
+write_track <- function(x, filename = "track.geojson", overwrite = TRUE, 
+                        crs = 4326, ...){
+  file_exists_already <- file.exists(filename[1])
+  if (file_exists_already && !overwrite){
+    warning("file already exists unable to overwrite:", filename[1])
+    return(x)
+  }
+  if (file_exists_already && overwrite){
+    unlink(filename[1])
+  }
+  
+  tmpfile <- tempfile()
+  if (!is.null(crs)) {
+    sf::write_sf(sf::st_transform(x, crs), tmpfile)
+  } else {  
+    sf::write_sf(x, tmpfile, ...)
+  }
+  file.copy(tmpfile, filename[1], overwrite = overwrite)
+  unlink(tmpfile)
+  x
+}
+
+
+#' Read a track
+#' 
+#' @export
+#' @param filename the name of the file to read
+#' @param crs NA or crs-castable object to transform the data
+#' @return sf object
+read_track <- function(filename, crs = c(NA, "+init=nad83:1802")[2]){
+  x <- sf::read_sf(filename)
+  if (!is.na(crs)) x <- sf::st_transform(x, crs)
+  x
+}
