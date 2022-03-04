@@ -12,6 +12,7 @@ particle_track(
   reverse = FALSE,
   drag = c(0, 0, 0),
   fixed_z = FALSE,
+  clip_z = TRUE,
   show_progress = FALSE,
   verbose = FALSE,
   filename = c("particle_track.gpkg", NA)[2],
@@ -36,6 +37,8 @@ Drag units must be the same as the units of \code{u}, \code{v}, and \code{ww}.}
 
 \item{fixed_z}{logical, if TRUE then depths are fixed to the initial depths, and 
 \code{drag} is truncated to two elements.}
+
+\item{clip_z}{logical, if TRUE clip Z positions to be between surface and bathymetric depth.}
 
 \item{show_progress}{logical, if TRUE then show a progress bar}
 

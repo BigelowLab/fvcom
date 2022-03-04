@@ -13,6 +13,7 @@
 #    Drag units must be the same as the units of \code{u}, \code{v}, and \code{ww}.
 #  @param fixed_z logical, if TRUE then depths are fixed to the initial depths, and 
 #   \code{drag} is truncated to two elements.
+#  @param clip_z logical, if TRUE clip Z positions to be between surface and bathymetric depth. 
 #  @return sf object of type POINT
 .multi_track <- function(X, P0 = X$random_points(n = 2),
                          tstep = 60,
@@ -20,6 +21,7 @@
                          reverse = FALSE,
                          drag = c(0,0,0),
                          fixed_z = FALSE,
+                         clip_z = TRUE, 
                          show_progress = FALSE,
                          verbose = FALSE){
   if (FALSE){
@@ -29,6 +31,7 @@
     reverse = FALSE
     drag = c(0,0,0)
     fixed_z = TRUE
+    clip_z = TRUE
     show_progress = FALSE
     verbose = TRUE
   }
@@ -67,8 +70,11 @@
     tstep <- -1 * tstep
   }
   
+  # depth ("h") is positive down but ww is "upward velocity"  Argh!
+  uvw_sign <- c(1,1,-1)
+  
   while (N <= NMAX){
-    if (verbose) cat("N =", N, "\n")
+    if (verbose) cat("step N =", N, "\n")
     if (show_progress[1]) utils::setTxtProgressBar(pb, N)
     itime <- sapply(track_iter,
                     function(i){
@@ -119,7 +125,7 @@
                        r <- c(pn[[i]][1:2] + ((uvw[[i]][,2:3] + drag) * tstep),
                               fixed_depth[i])
                      } else {
-                       r <- pn[[i]] + ((uvw[[i]][,2:4] + drag) * tstep)
+                       r <- pn[[i]] + ((uvw[[i]][,2:4] + drag) * uvw_sign * tstep)
                      }
                    } else {
                      r <- NULL
@@ -160,11 +166,36 @@
     if (any(!ok)){
       newbad <- (ok == FALSE) & (OK == TRUE)
       if (any(newbad)){
-        if (verbose) cat("drifted out of bounds:", which(newbad), "\n")
+        if (verbose) cat("track drifted out of bounds:", which(newbad), "\n")
         OK[!ok] <- FALSE
       }
     }
     if (all(!OK)) break
+    
+    if (clip_z){
+      # now we need to check the Z values against surface (0) and bathymetric depth (h)
+      for (i in track_iter){
+        if (OK[i]) {
+          d <- dd[[i]][3]
+          reset <- FALSE
+          if (d > 0) {
+            # whoops - it's a flying fish!
+            reset <- TRUE
+            d <- 0
+          } else if (d < X$M$depth[elem[[i]]]){
+            # whoops - it plowed into the seabed
+            d <- X$M$depth[elem[[i]]]
+            reset <- TRUE
+          }
+          if (reset){
+            if (verbose) cat("clipping Z along track:", i, "\n")
+            xyz <- sf::st_coordinates(gg[[i]])
+            xyz[3] <- d
+            gg[[i]] <- sf::st_sfc(sf::st_point(xyz), crs = sf::st_crs(X$M))
+          }
+        } #OK
+      }
+    }
     
     # add a new point
     for (i in track_iter){
@@ -211,6 +242,7 @@
 #'   Drag units must be the same as the units of \code{u}, \code{v}, and \code{ww}.
 #' @param fixed_z logical, if TRUE then depths are fixed to the initial depths, and 
 #'   \code{drag} is truncated to two elements.
+#' @param clip_z logical, if TRUE clip Z positions to be between surface and bathymetric depth. 
 #' @param overwrite logical, if TRUE allow overwriting of existing files
 #' @return sf object of type POINT
 particle_track <- function(X, P0 = X$random_points(),
@@ -219,6 +251,7 @@ particle_track <- function(X, P0 = X$random_points(),
                            reverse = FALSE,
                            drag = c(0,0,0),
                            fixed_z = FALSE,
+                           clip_z = TRUE, 
                            show_progress = FALSE,
                            verbose = FALSE, 
                            filename = c("particle_track.gpkg", NA)[2],
@@ -236,12 +269,15 @@ particle_track <- function(X, P0 = X$random_points(),
     filename = c("particle_track.gpkg", NA)[1]
   }
   
+  if (clip_z && !("depth" %in% colnames(X$M))) mesh <- X$mesh_depth()
+  
   PP <- .multi_track(X, P0,
                      tstep = tstep,
                      tmax = tmax,
                      reverse = reverse,
                      drag = drag,
                      fixed_z = fixed_z, 
+                     clip_z = clip_z,
                      show_progress = show_progress,
                      verbose = verbose)
   
@@ -331,7 +367,9 @@ write_track <- function(x, filename = "track.geojson", overwrite = TRUE,
     unlink(filename[1])
   }
   
-  tmpfile <- tempfile()
+  ext <- strsplit(basename(filename), ".", fixed = TRUE)[[1]]
+  ext <- paste0(".", ext[length(ext)])
+  tmpfile <- tempfile(fileext = ext)
   if (!is.null(crs)) {
     sf::write_sf(sf::st_transform(x, crs), tmpfile)
   } else {  

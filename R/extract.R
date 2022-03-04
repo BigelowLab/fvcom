@@ -1,7 +1,4 @@
 
-
-
-
 #' Get one or more variables by [element, siglay, time]
 #'
 #' @export

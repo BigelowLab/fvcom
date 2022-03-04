@@ -619,3 +619,19 @@ list_vars <- function(x){
                 units = sapply(vars, function(v) x$var[[v]]$units ),
                 longname = sapply(vars, function(v) x$var[[v]]$longname) )
 }
+
+#' Given an element, get its neighboring nodes
+#' 
+#' @export
+#' @param x FVCOM ncdf4 object
+#' @param elem numeric, element ID
+#' @return 4 column matrix where columns are [elemID, pID1, pID2, nodeID3]
+get_element_nodes <- function(x, elem = 1:3){
+  r <- cbind(elem, 
+       sapply(elem,
+         function(elemID){
+           n <- ncdf4::ncvar_get(x, "nv", start = c(elemID, 1), count = c(1, 3))
+         }))
+  colnames(r) <- c("elem", "p1", "p2", "p3")
+  r
+}

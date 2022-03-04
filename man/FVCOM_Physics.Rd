@@ -45,6 +45,7 @@ R6 base class suitable for inheritance by other classes
 \item \href{#method-random_points}{\code{FVCOM_Physics$random_points()}}
 \item \href{#method-char_size}{\code{FVCOM_Physics$char_size()}}
 \item \href{#method-mesh_metrics}{\code{FVCOM_Physics$mesh_metrics()}}
+\item \href{#method-mesh_depth}{\code{FVCOM_Physics$mesh_depth()}}
 \item \href{#method-append_bounds}{\code{FVCOM_Physics$append_bounds()}}
 \item \href{#method-plot}{\code{FVCOM_Physics$plot()}}
 \item \href{#method-clone}{\code{FVCOM_Physics$clone()}}
@@ -211,6 +212,19 @@ mesh (invisibly) with variables added including
 \item area element area in m^2
 \item char_dim characteristic dimension, for now the radius of the circle with equivalent area in m
 }
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-mesh_depth"></a>}}
+\if{latex}{\out{\hypertarget{method-mesh_depth}{}}}
+\subsection{Method \code{mesh_depth()}}{
+Compute the mean depth of each mesh element
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{FVCOM_Physics$mesh_depth()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+mesh (invisibly) with depth added
 }
 }
 \if{html}{\out{<hr>}}

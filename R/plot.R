@@ -142,12 +142,16 @@ plot_track <- function(x, X = NULL,
 #' @param title char, title to apply to the plot
 #' @param zvar char, the name of the zvariable
 #' @param xvar char, the name of the independent variable ("x")
+#' @param xlab char,  x axis label
+#' @param ylab char, y axis label
 #' @param filename NA or char, for optional output
 #' @param ... other arguments for the graphics device (\code{\link[grDevices]{pdf}} or \code{\link[grDevices]{png}})
 plot_z <- function(x,
                    title = "Particle Track - Z",
                    zvar = c("sigma", "depth", "Z")[3],
                    xvar = c("path_distance", "time")[1],
+                   ylab = c(sigma = "Sigma", depth = "Depth (m)", Z = "Depth (m)")[zvar],
+                   xlab = c(path_distance = "Path Distance (m)", time = "Time")[xvar],
                    filename = c(NA,"track-Z.png")[1],
                    ...){
   
@@ -163,7 +167,7 @@ plot_z <- function(x,
   }
   
   xlim <- range(x[[xvar[1]]], na.rm = TRUE)
-  ylim <- range(x[[zvar]], na.rm = TRUE)
+  ylim <- rev(range(x[[zvar]], na.rm = TRUE))
   
   if (!is.na(filename[1])){
     if (grepl(".pdf", filename[1], fixed = TRUE)){
@@ -175,7 +179,8 @@ plot_z <- function(x,
   
   
   plot(xlim, ylim, ylim = ylim, type = "n",
-       xlab = xvar, ylab = zvar, main = title)
+       xlab = xlab, ylab = ylab, 
+       main = title)
   x <- x |>
     dplyr::group_by(.data$track) |>
     dplyr::group_map(
@@ -198,3 +203,99 @@ plot_z <- function(x,
   }
   invisible(NULL)
 }
+
+
+# Plot one or more tracks by depth (Z) with ggplot
+# 
+# @export
+# @param x sf POINT object with one or more tracks
+# @param title char, title to apply to the plot
+# @param zvar char, the name of the zvariable
+# @param xvar char, the name of the independent variable ("x")
+# @param ... not sure
+# return(ggplot2 object)
+# ggplot_z <- function(x,
+#                    title = "Particle Track - Z",
+#                    zvar = c("sigma", "depth", "Z")[3],
+#                    xvar = c("path_distance", "time")[1],
+#                    ylab = c(sigma = "Sigma", depth = "Depth (m)", Z = "Depth (m)")[zvar],
+#                    xlab = c(path_distance = "Path Distance (m)", time = "Time")[xvar],
+#                    #filename = c(NA,"track-Z.png")[1],
+#                    ...){
+#   
+#   zvar <- zvar[[1]]
+#   xvar <- xvar[[1]]
+#   if(!(zvar %in% colnames(x))) stop("input must have zvar variable:", zvar)
+#   if(!(xvar %in% colnames(x))) stop("input must have xvar variable:", xvar)
+#   
+#   if (!('track' %in% colnames(x))){
+#     x <- dplyr::mutate(track = 1, .before = 1)
+#   }
+#   
+#   tracks <- sort(unique(x$track))
+#   ntracks <- length(tracks)
+#   cols <- grDevices::palette.colors(seq_len(ntracks) + 1)
+#   trcak_cols <- cols[x$track]
+#   
+#   
+#   x <- dplyr::mutate(x, 
+#                      track = factor(track),
+#                      track_col = track_col )
+#   
+#   xlim <- range(x[[xvar[1]]], na.rm = TRUE)
+#   ylim <- rev(range(x[[zvar]], na.rm = TRUE))
+#   
+#   #if (!is.na(filename[1])){
+#   #  if (grepl(".pdf", filename[1], fixed = TRUE)){
+#   #    grDevices::pdf(filename[1], ...)
+#   #  } else {
+#   #    grDevices::png(filename[1], ...)
+#   #  }
+#   #}
+#   x <- sf::st_drop_geometry(x) |>
+#     dplyr::group_by(.data$track)
+#   
+#   startstop <- function(x, y){
+#     dplyr::slice(x, c(1, dplyr::n()))
+#   }
+#   ends <- x |>
+#     group_map(startstop, .keep = TRUE) |>
+#     dplyr::bind_rows() |>
+#     dplyr::group_by(.data$track)
+#   
+#   ggplot2::ggplot(data = x,
+#                   ggplot2::aes_string(x = xvar, y = zvar)) +
+#     ggplot2::scale_color_discrete(type = unname(cols)) + 
+#     ggplot2::geom_line(size = 1, ggplot2::aes(color = .data$track_col)) +
+#     ggplot2::geom_point(data = ends |> dplyr::slice(1),
+#                         ggplot2::aes_string(x = xvar, y = zvar),
+#                         shape = 1, size = 1.5,
+#                         color = .data$track_col) + 
+#     ggplot2::geom_point(data = ends |> dplyr::slice(dplyr::n()),
+#                         ggplot2::aes_string(x = xvar, y = zvar),
+#                         shape = 19, size = 1.5) +
+#     ggplot2::facet_wrap(dplyr::all_of("track"), ncol = 1,
+#                         scales = "free_y")
+#     
+#   ?plot(xlim, ylim, ylim = ylim, type = "n",
+#        xlab = xlab, ylab = ylab, 
+#        main = title)
+#   x <- x |>
+#     dplyr::group_by(.data$track) |>
+#     dplyr::group_map(
+#       function(x, key){
+#         i <- as.numeric(as.character(x$track[1]))
+#         lines(x[[xvar]], x[[zvar]],
+#               col = cols[i+1],
+#               type = "l",
+#               lwd = 2)
+#         y <- x |> dplyr::slice(c(1,dplyr::n()))
+#         points(y[[xvar]], y[[zvar]],
+#                col = cols[i+1],
+#                pch = c(1, 19),  # open = start, closed = end
+#                cex = 1.5)
+#         x
+#       }, .keep = TRUE ) 
+#   
+#  gg
+# }

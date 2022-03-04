@@ -9,6 +9,8 @@ plot_z(
   title = "Particle Track - Z",
   zvar = c("sigma", "depth", "Z")[3],
   xvar = c("path_distance", "time")[1],
+  ylab = c(sigma = "Sigma", depth = "Depth (m)", Z = "Depth (m)")[zvar],
+  xlab = c(path_distance = "Path Distance (m)", time = "Time")[xvar],
   filename = c(NA, "track-Z.png")[1],
   ...
 )
@@ -21,6 +23,10 @@ plot_z(
 \item{zvar}{char, the name of the zvariable}
 
 \item{xvar}{char, the name of the independent variable ("x")}
+
+\item{ylab}{char, y axis label}
+
+\item{xlab}{char,  x axis label}
 
 \item{filename}{NA or char, for optional output}
 
