@@ -15,7 +15,7 @@ particle_track(
   clip_z = TRUE,
   show_progress = FALSE,
   verbose = FALSE,
-  filename = c("particle_track.gpkg", NA)[2],
+  filename = c("particle_track.geojson", NA)[2],
   overwrite = TRUE
 )
 }

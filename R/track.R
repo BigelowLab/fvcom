@@ -178,11 +178,11 @@
         if (OK[i]) {
           d <- dd[[i]][3]
           reset <- FALSE
-          if (d > 0) {
+          if (d < 0) {
             # whoops - it's a flying fish!
             reset <- TRUE
             d <- 0
-          } else if (d < X$M$depth[elem[[i]]]){
+          } else if (d > X$M$depth[elem[[i]]]){
             # whoops - it plowed into the seabed
             d <- X$M$depth[elem[[i]]]
             reset <- TRUE
@@ -254,7 +254,7 @@ particle_track <- function(X, P0 = X$random_points(),
                            clip_z = TRUE, 
                            show_progress = FALSE,
                            verbose = FALSE, 
-                           filename = c("particle_track.gpkg", NA)[2],
+                           filename = c("particle_track.geojson", NA)[2],
                            overwrite = TRUE){
   
   if (FALSE){
@@ -266,7 +266,7 @@ particle_track <- function(X, P0 = X$random_points(),
     fixed+z = FALSE
     show_progress = FALSE
     verbose = TRUE
-    filename = c("particle_track.gpkg", NA)[1]
+    filename = c("particle_track.geojson", NA)[1]
   }
   
   if (clip_z && !("depth" %in% colnames(X$M))) mesh <- X$mesh_depth()
@@ -283,12 +283,12 @@ particle_track <- function(X, P0 = X$random_points(),
   
   P <- dplyr::bind_rows(PP)
   
+  #if (nrow(P) > 0){
+  #  P <- track_add_z(P) |>
+  #    track_add_distance(P) 
+  #}
   if (nrow(P) > 0 && !is.na(filename[1])){
-    if (file.exists(filename[1]) && overwrite) ok <- file.remove(filename[1])
-    tf <- tempfile(fileext = ".gpkg")
-    ok <- sf::write_sf(P, tf)
-    dummy <- file.copy(tf, filename[1])
-    dummy <- file.remove(tf)
+    P <- write_track(P, filename[1])
   }
   P
 }
