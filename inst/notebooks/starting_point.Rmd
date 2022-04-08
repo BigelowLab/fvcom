@@ -1,6 +1,6 @@
 ---
 title: "starting point"
-output: html_notebook
+output: github_document
 ---
 
 ### Question: how do I use my own point to start a track?
