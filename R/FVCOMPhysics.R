@@ -385,6 +385,48 @@ random_point <- function(X,
   p
 }
 
+#' Given one or more spatial locations, generate POINT objects to seed for tracking
+#'
+#' @export
+#' @param X FVCOM_Physics object
+#' @param x sf POINT or numeric one of more x coordinates such as longitude
+#'   if sf POINT class then y, z, time crs are ignored.
+#' @param y numeric one of more y coordinates such as latitude
+#' @param z numeric one of more z coordinates such as depth
+#' @param time POSIXct one of more time stamps (UTC)
+#' @param crs the CRS for the input [x,y] coordinates 
+#' @return sf POINT object suitable for tracking
+as_seed <- function(X, x, y, z = 0, time = X$get_time()[1], crs = 4326){
+  
+  if (inherits(x, 'sf')){
+    p <- sf::st_transform(x, crs = sf::st_crs(X$M)) |>
+      dplyr::mutate(elem = point_element(X, rlang::.data), .before = 1)
+  } else {
+    p <- dplyr::tibble(x = x, y = y, z = z, time = time ) |>
+      sf::st_as_sf(coords = c("x", "y", "z"), crs = crs) |>
+      sf::st_transform(crs = sf::st_crs(X$M))
+    elem <- point_element(X, p)
+    p <- dplyr::mutate(p, elem = elem, .before = 1)
+  }
+  return(p)
+}
+
+#' Given a POINT object, determine the elements each point belongs to
+#' 
+#' @export
+#' @param X FVCOM_Physics object
+#' @param p sf POINT object
+#' @return integer index matching the mesh element that contains each point.  For points
+#'   outside of the mesh -1 is returned.
+point_element <- function(X, p){
+  sf::st_contains(X$M, p, sparse = FALSE) |>
+    apply(2, function(x){
+      ix <- which(x)
+      if (length(ix) <= 0) ix <- -1
+      ix
+    })
+}
+
 #' Instantiate a FVCOM_Physics R6 object
 #' 
 #' @export
