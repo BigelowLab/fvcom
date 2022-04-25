@@ -1,0 +1,96 @@
+---
+title: "CascoBay spatial"
+output: html_document
+date: '2022-04-25'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+suppressPackageStartupMessages({
+  library(fvcom)
+  library(sf)
+  library(dplyr)
+  library(ncdf4)
+  library(leaflet)
+})
+
+# Estimate the bounding box of a projected bounding box
+# adapted from 
+# https://stackoverflow.com/questions/55050684/transform-result-of-st-bbox-to-other-crs
+# @param x st_bbox
+# @param n sample the extent into a grid with this many x,y divisions
+# @param crs the desired output CRS
+transform_bb <- function(x, n = 10, crs = 4326){
+  x |>
+    sf::st_make_grid(n=n) |>
+    sf::st_transform(crs = crs) |>
+    sf::st_bbox()
+}
+```
+
+
+### Casco Bay model outputs
+
+First we load the Casco Bay 2018 model outputs, and print the bounding box coordinates of the mesh in both the native and lon-lat transformed.  The longitude of the transformed coordinates places us just west of Toronto, Ontario.
+
+```{r}
+# A local NetCDF file
+CB <- cascophys::CascoBayPhysics()
+```
+
+The projection stated in the NetCDF file is `proj=tmerc +datum=NAD83 +lon_0=-70d10 lat_0=42d50 k=.9999666666666667 x_0=900000 y_0=0`
+
+```{r, echo = FALSE}
+cat("native proj bounding box\n")
+(cb_bb <- sf::st_bbox(CB$M))
+cat("lonlat bounding box\n")
+(cb_ll <- transform_bb(cb_bb))
+```
+
+### Hampton Inundation model outputs
+
+```{r}
+# NetCDF/OPeNDAP from http://fvcom.smast.umassd.edu/necofs/
+HB <- fvcom::HamptonPhysics()
+```
+
+The projection stated in the NetCDF file is `init=nad83:1802` which GDAL converts to the same as that for the Casco Bay model. 
+
+```{r, echo = FALSE}
+cat("native proj bounding box\n")
+(hb_bb <- sf::st_bbox(HB$M))
+cat("lonlat bounding box\n")
+(hb_ll <- transform_bb(hb_bb))
+```
+
+### Gulf of Maine and Shelf model outputs
+
+```{r}
+# NetCDF/OPeNDAP from http://fvcom.smast.umassd.edu/necofs/
+GOM <- fvcom::GOMPhysics()
+```
+
+The projection stated in the NetCDF file is `init=nad83:1802`
+
+```{r, echo = FALSE}
+cat("native proj bounding box\n")
+(gom_bb <- sf::st_bbox(GOM$M))
+cat("lonlat bounding box\n")
+(gom_ll <- transform_bb(gom_bb))
+```
+
+### Plotting all three
+
+To save time and to reduce the size of the output file, we show the approximate bounding box of each, Casco Bay 2018 (purple), Hampton Inundation (blue), and Gulf of Maine (gray), after being projected to lon-lat WGS84 coordinates. You can see that the Casco Bay 2018 model outputs we have in hand shows up west of Toronto.
+
+```{r, echo = FALSE}
+leaflet() |>
+  addTiles() |>
+  addPolygons(data = sf::st_as_sfc(gom_ll, crs = 4326), 
+              fill = TRUE, color = "grey", weight = 2) |>
+  addPolygons(data = sf::st_as_sfc(hb_ll, crs = 4326),  
+              fill = TRUE, color = "blue", weight = 2) |>
+  addPolygons(data = sf::st_as_sfc(cb_ll, crs = 4326),  
+              fill = TRUE, color = "purple", weight = 2)
+```
+
