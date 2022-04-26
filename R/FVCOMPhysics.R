@@ -400,7 +400,7 @@ as_seed <- function(X, x, y, z = 0, time = X$get_time()[1], crs = 4326){
   
   if (inherits(x, 'sf')){
     p <- sf::st_transform(x, crs = sf::st_crs(X$M)) |>
-      dplyr::mutate(elem = point_element(X, rlang::.data), .before = 1)
+      dplyr::mutate(elem = point_element(X, x), .before = 1)
   } else {
     p <- dplyr::tibble(x = x, y = y, z = z, time = time ) |>
       sf::st_as_sf(coords = c("x", "y", "z"), crs = crs) |>
