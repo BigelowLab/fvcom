@@ -2,6 +2,8 @@
 
 export(BostonPhysics)
 export(Boston_Physics)
+export(CascoBayPhysics)
+export(CascoBay_Physics)
 export(FVCOMPhysics)
 export(FVCOM_Physics)
 export(GOMPhysics)
