@@ -11,6 +11,8 @@ particle_track(
   tmax = 3600 * 12,
   reverse = FALSE,
   drag = c(0, 0, 0),
+  resistance = c(0, 0, 0),
+  resistance_type = c("proportional", "constant")[1],
   fixed_z = FALSE,
   clip_z = TRUE,
   show_progress = FALSE,
@@ -34,6 +36,14 @@ model.  See \code{\link{random_point}} to set the seed with other timestamps}
 
 \item{drag}{numeric, a three element vector of drag factors in [x, y, z], like a sinking rate in z.
 Drag units must be the same as the units of \code{u}, \code{v}, and \code{ww}.}
+
+\item{resistance}{numeric, if non zero then apply this to the speed computed 
+at each each time step.  Negative to impeded progress, positive to add to progress.
+Zero has no effect}
+
+\item{resistance_type}{character, one of 'proportional' or 'constant' Proportional is a proportion 
+of the speed, thus typically a fraction in the range of [-1, 1].  Constant is applied uniformly
+and is in the unit/time (typically m/s) of the data.}
 
 \item{fixed_z}{logical, if TRUE then depths are fixed to the initial depths, and 
 \code{drag} is truncated to two elements.}

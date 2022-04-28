@@ -11,6 +11,12 @@
 #    model.  See \code{\link{random_point}} to set the seed with other timestamps
 #  @param drag numeric, a three element vector of drag factors in [x, y, z], like a sinking rate in z.
 #    Drag units must be the same as the units of \code{u}, \code{v}, and \code{ww}.
+#  @param resistance numeric, if non zero then apply this to the speed computed 
+#    at each each time step.  Negative to impeded progress, positive to add to progress.
+#    Zero has no effect
+#  @param resistance_type character, one of 'proportional' or 'constant' Proportional is a proportion 
+#    of the speed, thus typically a fraction in the range of [-1, 1].  Constant is applied uniformly
+#    and is in the unit/time (typically m/s) of the data. 
 #  @param fixed_z logical, if TRUE then depths are fixed to the initial depths, and 
 #   \code{drag} is truncated to two elements.
 #  @param clip_z logical, if TRUE clip Z positions to be between surface and bathymetric depth. 
@@ -20,6 +26,8 @@
                          tmax = 3600 * 12,
                          reverse = FALSE,
                          drag = c(0,0,0),
+                         resistance = c(0,0,0),
+                         resistance_type = c("proportional", "constant")[1],
                          fixed_z = FALSE,
                          clip_z = TRUE, 
                          show_progress = FALSE,
@@ -34,12 +42,16 @@
     clip_z = TRUE
     show_progress = FALSE
     verbose = TRUE
+    resistance = c(0,0,0)
+    resistance_type = c("proportional", "constant")[1]
   }
   
   if (fixed_z){
     fixed_depth <- as.vector(sf::st_coordinates(P0)[,'Z'])
     drag <- drag[1:2]
   }
+  do_resist <- sum(abs(resistance)) > 0
+  
   
   TIMES <- X$get_time() # X$NC$dim$time$vals
   if (reverse && any(P0$time <= TIMES[1])){
@@ -124,9 +136,23 @@
                      if (fixed_z){
                        r <- c(pn[[i]][1:2] + ((uvw[[i]][,2:3] + drag) * tstep),
                               fixed_depth[i])
+                       if (do_resist){
+                         if (resistance_type == "constant"){
+                           r[1:2] <- r[1:2] + resistance[1:2]
+                         } else {
+                           r[1:2] <- r[1:2] + (r[1:2] * resistance[1:2])
+                         }
+                       }
                      } else {
                        r <- pn[[i]] + ((uvw[[i]][,2:4] + drag) * uvw_sign * tstep)
-                     }
+                       if (do_resist){
+                         if (resistance_type[1] == "constant"){
+                           r <- r + resistance
+                         } else {
+                           r <- r + (r * resistance)
+                         }
+                       }
+                     }   
                    } else {
                      r <- NULL
                    }
@@ -240,6 +266,12 @@
 #'   model.  See \code{\link{random_point}} to set the seed with other timestamps
 #' @param drag numeric, a three element vector of drag factors in [x, y, z], like a sinking rate in z.
 #'   Drag units must be the same as the units of \code{u}, \code{v}, and \code{ww}.
+#' @param resistance numeric, if non zero then apply this to the speed computed 
+#'   at each each time step.  Negative to impeded progress, positive to add to progress.
+#'   Zero has no effect
+#' @param resistance_type character, one of 'proportional' or 'constant' Proportional is a proportion 
+#'   of the speed, thus typically a fraction in the range of [-1, 1].  Constant is applied uniformly
+#'   and is in the unit/time (typically m/s) of the data. 
 #' @param fixed_z logical, if TRUE then depths are fixed to the initial depths, and 
 #'   \code{drag} is truncated to two elements.
 #' @param clip_z logical, if TRUE clip Z positions to be between surface and bathymetric depth. 
@@ -250,6 +282,8 @@ particle_track <- function(X, P0 = X$random_points(),
                            tmax = 3600 * 12,
                            reverse = FALSE,
                            drag = c(0,0,0),
+                           resistance = c(0,0,0),
+                           resistance_type = c("proportional", "constant")[1],
                            fixed_z = FALSE,
                            clip_z = TRUE, 
                            show_progress = FALSE,
@@ -267,15 +301,21 @@ particle_track <- function(X, P0 = X$random_points(),
     show_progress = FALSE
     verbose = TRUE
     filename = c("particle_track.geojson", NA)[1]
+    resistance = c(0,0,0)
+    resistance_type = c("proportional", "constant")[1]
   }
   
   if (clip_z && !("depth" %in% colnames(X$M))) mesh <- X$mesh_depth()
+  if (length(resistance) < 3) resistance <- rep(resistance[1],3)
+  if (length(drag) < 3) drag <- rep(drag[1],3)
   
   PP <- .multi_track(X, P0,
                      tstep = tstep,
                      tmax = tmax,
                      reverse = reverse,
                      drag = drag,
+                     resistance = resistance,
+                     resistance_type = resistance_type,
                      fixed_z = fixed_z, 
                      clip_z = clip_z,
                      show_progress = show_progress,
