@@ -12,11 +12,27 @@ this mesh to deliver models for the Gulf of Maine, Mass coastal waters
 and a small number of estuaries. NECOFS provides an [interactive web
 map](http://134.88.228.119:8080/fvcomwms/)
 
-#### Gulf of Maine centric products
 
-There are a number of models with a Gulf of Maine bend including
-[forecasts](http://www.smast.umassd.edu:8080/thredds/forecasts.html) and
-[archives](http://www.smast.umassd.edu:8080/thredds/catalog/models/fvcom/NECOFS/Archive/NECOFS_GOM/catalog.html)
+### Gulf of Maine Regional Hindcast and Forecast Archives
+
+There are a number of models with a Gulf of Maine bend including both 
+[forecasts](http://www.smast.umassd.edu:8080/thredds/catalog/models/fvcom/NECOFS/Forecasts/catalog.html) and 
+[data assimilative hindcasts](http://www.smast.umassd.edu:8080/thredds/catalog/models/fvcom/NECOFS/Archive/Seaplan_33_Hindcast_v1/catalog.html). 
+
+Gulf of Maine forecasts are are available up to three days out. These are also archived and can be accessed for the time period of 2016-2023.
+[NECOFS Forecast Archives](http://www.smast.umassd.edu:8080/thredds/catalog/models/fvcom/NECOFS/Archive/NECOFS_GOM/catalog.html)
+
+Regional hindcasts are another data product available on the [SMAST NECOFS THREDDS Catalog](http://www.smast.umassd.edu:8080/thredds/catalog/models/fvcom/NECOFS/Archive/catalog.html). 
+These may be used as proxies for real-world data which may otherwise not be available across these spatial scales or at hourly/daily timesteps.
+
+Hindcast data is available beginning in 1978, but its coverage currently ends at different points in time dependent on the output timestep:
+
+* [2018 for hourly timestep data](http://www.smast.umassd.edu:8080/thredds/catalog/models/fvcom/NECOFS/Archive/Seaplan_33_Hindcast_v1/catalog.html)
+* [2016 for daily averages](http://www.smast.umassd.edu:8080/thredds/catalog/models/fvcom/NECOFS/Archive/Seaplan_33_Hindcast_v1/daily_mean/catalog.html)
+* [2017 for monthly averages](http://www.smast.umassd.edu:8080/thredds/catalog/models/fvcom/NECOFS/Archive/Seaplan_33_Hindcast_v1/monthly_mean/catalog.html)
+
+**Version Note:**
+Depending on which timestep is desired, the FVCOM mesh used after 2016 will vary between some combination of GOM4 and GOM5 mesh versions. These newer versions increase the number of mesh nodes and in the case of GOM5 increase the spatial extent of the model.
 
 ### Requirements
 
