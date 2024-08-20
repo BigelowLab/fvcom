@@ -55,12 +55,6 @@ get_poly_mesh_intersection <- function(poly_sf, fvcom_mesh, relative_areas = TRU
 
 
 
-
-
-#### WORKING HERE - ####
-#Indices are pulling all depth, not all time  ####
-
-
 #' Get the Average Value for one FVCOM mesh Element using its Nodes
 #' 
 #' 
@@ -302,79 +296,79 @@ get_timeseries_for_poly <- function(
 
 
 
-#### Function TESTING  ####
-
-# For testing
-library(tidyverse)
-library(sf)
-library(fvcom)
-library(ncdf4)
-
-# URL to a file - needs to have coordinate values! Some are empty
-test_directory <- "http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Archive/Seaplan_33_Hindcast_v1/"
-test_file <- "gom3_197801.nc"
-test_nc <- nc_open(str_c(test_directory, test_file))
-
-
-# test polygon - from ecodata package
-test_poly <- read_sf(str_c(gmRi::cs_path("res", "Shapefiles/EPU/individual_epus"), "GB.geojson"))
-
-
-# Step through functions
-
-# Get the mesh, do this one time*
-fvcom_mesh <- get_mesh_geometry(x = test_nc)
-
-# Make sure crs matches
-test_poly <- st_transform(
-  st_union(test_poly), 
-  st_crs(fvcom_mesh))
-
-# Step 1: Get the intersection table
-gb_intersection <- get_poly_mesh_intersection(
-  poly_sf = test_poly, 
-  fvcom_mesh = fvcom_mesh, 
-  relative_areas = T)
-
-# Step 2: Get the timeseries for the elements
-single_elem_test <- get_average_from_nodes(
-  zonal_assignments = gb_intersection, 
-  fvcom_nc = test_nc,
-  elem_id = 6429, 
-  nc_varname = "temp", 
-  siglev = 1)
-
-# Step 2: Do it for all of the elements - loops over distinct "elem"
-all_element_test <- get_mesh_element_timeseries(
-  mesh_intersection_df = gb_intersection, 
-  fvcom_nc = test_nc, 
-  nc_varname = "temp", 
-  siglev = 1)
-# Check one
-all_element_test[1]
-
-# Step 3: Area weighted average
-area_weight_test <- get_area_weighted_zonal_average(
-  mesh_poly_intersection = gb_intersection, 
-  zonal_means = all_element_test, 
-  fvcom_nc = test_nc, 
-  nc_timedim = "Times")
-
-# Check it
-area_weight_test
-
-# Steps 1-3 Together
-gb_ts <- get_timeseries_for_poly(
-  poly_sf = test_poly, 
-  fvcom_nc = test_nc, 
-  fvcom_mesh = fvcom_mesh, 
-  nc_varname = "temp", 
-  nc_timedim = "Times")
-
-# What are the hourly times?
-names(test_nc$var)
-gb_ts$time <- ncvar_get(test_nc, varid = "Times") %>% 
-  str_remove("T") %>% 
-  base::as.POSIXct()
-ggplot(gb_ts, aes(time, zonal_mu)) +
-  geom_line()
+# #### Function TESTING  ####
+# 
+# # For testing
+# library(tidyverse)
+# library(sf)
+# library(fvcom)
+# library(ncdf4)
+# 
+# # URL to a file - needs to have coordinate values! Some are empty
+# test_directory <- "http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Archive/Seaplan_33_Hindcast_v1/"
+# test_file <- "gom3_197801.nc"
+# test_nc <- nc_open(str_c(test_directory, test_file))
+# 
+# 
+# # test polygon - from ecodata package
+# test_poly <- read_sf(str_c(gmRi::cs_path("res", "Shapefiles/EPU/individual_epus"), "GB.geojson"))
+# 
+# 
+# # Step through functions
+# 
+# # Get the mesh, do this one time*
+# fvcom_mesh <- get_mesh_geometry(x = test_nc)
+# 
+# # Make sure crs matches
+# test_poly <- st_transform(
+#   st_union(test_poly), 
+#   st_crs(fvcom_mesh))
+# 
+# # Step 1: Get the intersection table
+# gb_intersection <- get_poly_mesh_intersection(
+#   poly_sf = test_poly, 
+#   fvcom_mesh = fvcom_mesh, 
+#   relative_areas = T)
+# 
+# # Step 2: Get the timeseries for the elements
+# single_elem_test <- get_average_from_nodes(
+#   zonal_assignments = gb_intersection, 
+#   fvcom_nc = test_nc,
+#   elem_id = 6429, 
+#   nc_varname = "temp", 
+#   siglev = 1)
+# 
+# # Step 2: Do it for all of the elements - loops over distinct "elem"
+# all_element_test <- get_mesh_element_timeseries(
+#   mesh_intersection_df = gb_intersection, 
+#   fvcom_nc = test_nc, 
+#   nc_varname = "temp", 
+#   siglev = 1)
+# # Check one
+# all_element_test[1]
+# 
+# # Step 3: Area weighted average
+# area_weight_test <- get_area_weighted_zonal_average(
+#   mesh_poly_intersection = gb_intersection, 
+#   zonal_means = all_element_test, 
+#   fvcom_nc = test_nc, 
+#   nc_timedim = "Times")
+# 
+# # Check it
+# area_weight_test
+# 
+# # Steps 1-3 Together
+# gb_ts <- get_timeseries_for_poly(
+#   poly_sf = test_poly, 
+#   fvcom_nc = test_nc, 
+#   fvcom_mesh = fvcom_mesh, 
+#   nc_varname = "temp", 
+#   nc_timedim = "Times")
+# 
+# # What are the hourly times?
+# names(test_nc$var)
+# gb_ts$time <- ncvar_get(test_nc, varid = "Times") %>% 
+#   str_remove("T") %>% 
+#   base::as.POSIXct()
+# ggplot(gb_ts, aes(time, zonal_mu)) +
+#   geom_line()
