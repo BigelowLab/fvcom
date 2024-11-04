@@ -7,23 +7,24 @@
 #'   then it is used in x and y directions.
 #' @param crs character string of the mesh
 #' @param bb numeric, 4 element extent [left, right, bottom, top] by default matching MURSST
-#' @param ... further arguments for \code{\link[raster]{raster}}
+#' @param value numeric, the value to assign to cells
 #' @return a raster layer
 mur_template <- function(x,
                          res = c(0.01, 0.01),
-                         crs = "epsg:4326",
+                         crs = 4326,
                          bb = c(-75.69, -56.85,  35.27,  46.15),
-                         ...){
+                         value = NA_real_){
   if (length(res) < 2) res <- c(res, res)
   r2 <- res/2
-  raster::raster(
-    res = res,
-    xmn = bb[1] - r2[1],
-    xmx = bb[2] + r2[1],
-    ymn = bb[3] - r2[2],
-    ymx = bb[4] + r2[2],
-    crs = crs,
-    ...)
+  
+  sf::st_bbox(c(xmin = bb[1] - r2[1],
+                ymin = bb[3] - r2[2],
+                xmax = bb[2] + r2[1],
+                ymax = bb[4] + r2[2]),
+              crs = crs) |>
+    stars::st_as_stars(dx = res[1],
+                       dy = res[2],
+                       value = value) 
 }
 
 #' Retrieve a raster template that covers the provided mesh
@@ -33,24 +34,24 @@ mur_template <- function(x,
 #' @param res a one or two element numeric of the cell resolution.  If one element
 #'   then it is used in x and y directions.
 #' @param crs character string of the mesh
-#' @param ... further arguments for \code{\link[raster]{raster}}
+#' @param value numeric, the value to assign to cells
 #' @return a raster layer
 default_template <- function(x,
                              res = c(0.01, 0.01),
-                             crs = sf::st_crs(x)[['epsg']],
-                             ...){
+                             crs = sf::st_crs(x),
+                             value = NA_real_){
 
     if (length(res) < 2) res <- c(res, res)
-    d2 <- res/2
-    bb <- as.vector(sf::st_bbox(x))
-    raster::raster(
-      res = res,
-      xmn = bb[1] - d2[1],
-      xmx = bb[3] + d2[1],
-      ymn = bb[2] - d2[2],
-      ymx = bb[4] + d2[2],
-      crs = crs,
-      ...)
+    r2 <- res/2
+    bb <- sf::st_bbox(x)
+    sf::st_bbox(c(xmin = bb[["xmin"]] - r2[1],
+                  ymin = bb[["ymin"]] - r2[2],
+                  xmax = bb[["xmax"]] + r2[1],
+                  ymax = bb[["ymax"]] + r2[2]),
+                crs = crs) |>
+      stars::st_as_stars(dx = res[1],
+                         dy = res[2],
+                         value = value) 
 }
 
 #' Interpolate a raster from a mesh
@@ -58,16 +59,16 @@ default_template <- function(x,
 #' @export
 #' @param x the mesh as `sf`` POLYGON
 #' @param template a raster template see \code{\link{default_template}} and \code{\link{mur_template}}
-#' @param ... further arguments for \code{\link[fasterize]{fasterize}}
+#' @param ... further arguments for \code{\link[stars]{st_rasterize}}
 #' @return a raster layer
 #' @examples
 #' \dontrun{
 #'   mesh <- fvcom::get_mesh(x, vars = c("u", "v"), what = "lonlat")
-#'   uv <- raster::stack(sapply(c("u", "v"), function(f) rasterize(mesh, field = f), simplify = FALSE))
-#'   rasterVis::vectorplot(uv, isField = TRUE, main = 'Surface Currents')
+#'   uv <- lapply(c("u", "v"), function(f) fvcom::rasterize(mesh[f]))
+#'   
 #' }
 rasterize <- function(x,
                       template = default_template(x),
                       ...){
-  fasterize::fasterize(x, template, ...)
+  stars::st_rasterize(x, template = template, ...)
 }

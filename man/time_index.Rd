@@ -6,8 +6,8 @@
 \usage{
 time_index(
   x,
-  time = as.POSIXct(paste(Sys.Date(), "12:00:00"), format = "\%Y-\%m-\%d \%H:\%M:\%S",
-    tz = "UTC")
+  time = as.POSIXct(paste(Sys.Date(), "12:00:00"), format = "\%Y-\%m-\%d \%H:\%M:\%S", tz
+    = "UTC")
 )
 }
 \arguments{

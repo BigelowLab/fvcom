@@ -7,9 +7,9 @@
 mur_template(
   x,
   res = c(0.01, 0.01),
-  crs = "epsg:4326",
+  crs = 4326,
   bb = c(-75.69, -56.85, 35.27, 46.15),
-  ...
+  value = NA_real_
 )
 }
 \arguments{
@@ -22,7 +22,7 @@ then it is used in x and y directions.}
 
 \item{bb}{numeric, 4 element extent [left, right, bottom, top] by default matching MURSST}
 
-\item{...}{further arguments for \code{\link[raster]{raster}}}
+\item{value}{numeric, the value to assign to cells}
 }
 \value{
 a raster layer

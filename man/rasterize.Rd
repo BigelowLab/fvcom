@@ -11,7 +11,7 @@ rasterize(x, template = default_template(x), ...)
 
 \item{template}{a raster template see \code{\link{default_template}} and \code{\link{mur_template}}}
 
-\item{...}{further arguments for \code{\link[fasterize]{fasterize}}}
+\item{...}{further arguments for \code{\link[stars]{st_rasterize}}}
 }
 \value{
 a raster layer
@@ -22,7 +22,7 @@ Interpolate a raster from a mesh
 \examples{
 \dontrun{
   mesh <- fvcom::get_mesh(x, vars = c("u", "v"), what = "lonlat")
-  uv <- raster::stack(sapply(c("u", "v"), function(f) rasterize(mesh, field = f), simplify = FALSE))
-  rasterVis::vectorplot(uv, isField = TRUE, main = 'Surface Currents')
+  uv <- lapply(c("u", "v"), function(f) fvcom::rasterize(mesh[f]))
+  
 }
 }

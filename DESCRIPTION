@@ -1,26 +1,22 @@
 Package: fvcom
 Title: fvcom
 Description: Convenience tools for accessing FVCOM datasets.
-Version: 0.1
+Version: 0.2
 Encoding: UTF-8
 Depends:
-    R (>= 3.0)
+    R (>= 4.1)
 Imports:
     grDevices,
     graphics,
     stats,
     rlang,
     ncdf4,
-    tibble,
     dplyr,
-    raster,
     sf,
-    fasterize,
-    locate,
-    ggplot2
+    stars
 Maintainer: Ben Tupper <btupper@bigelow.org>
 Author: Ben Tupper <btupper@bigelow.org>
 URL: https://github.com/BigelowLab/fvcom
 License: MIT + file LICENSE
 LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.3.2

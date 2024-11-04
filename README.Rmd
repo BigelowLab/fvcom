@@ -7,40 +7,44 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Convenient access to [FVCOM](http://fvcom.smast.umassd.edu/fvcom/)
-datasets from R.
+Convenient access to [FVCOM](https://www.fvcom.org/) datasets from R.
 
-### Background
+# Background
 
-[FVCOM](http://fvcom.smast.umassd.edu/fvcom/) produces ocean circulation
+[FVCOM](https://www.fvcom.org/) produces ocean circulation
 models on an irregular mesh. Here is the [user
 manual](http://fvcom.smast.umassd.edu/wp-content/uploads/2013/11/MITSG_12-25.pdf).
 
-As an example, [NECOFS](http://fvcom.smast.umassd.edu/necofs/) leverages
+As an example, [NECOFS](http://134.88.228.119:8080/fvcomwms/) leverages
 this mesh to deliver models for the Gulf of Maine, Mass coastal waters
-and a small number of estuaries. NECOFS provides an [interactive web
-map](http://134.88.228.119:8080/fvcomwms/)
+and a small number of estuaries. NECOFS provides an THREDDS catalog of its OPeNDAP resources.
 
-## Requirements
+# Requirements
 
  + [R 4.1+](https://www.r-project.org/)
-  + [rlang](https://cran.r-project.org/package=rlang)
-  + [ncdf4](https://cran.r-project.org/package=ncfd4)
-  + [tibble](https://cran.r-project.org/package=tibble)
-  + [dplyr](https://cran.r-project.org/package=dplyr)
-  + [raster](https://cran.r-project.org/package=raster)
-  + [sf](https://cran.r-project.org/package=sf)
-  + [fasterize](https://cran.r-project.org/package=fasterize)
-  + [locate](https://cran.r-project.org/package=ncfd4) # Not available on CRAN
+ + [rlang](https://cran.r-project.org/package=rlang)
+ + [ncdf4](https://cran.r-project.org/package=ncfd4)
+ + [tibble](https://cran.r-project.org/package=tibble)
+ + [dplyr](https://cran.r-project.org/package=dplyr)
+ + [sf](https://cran.r-project.org/package=sf)
+ + [stars](https://cran.r-project.org/package=stars)
+ + [locate](https://github.com/BigelowLab/locate) # Not available on CRAN
+
+# Installation
+
+```
+remotes::install_github("BigelowLab/locate")`
+remotes::install_github("BigelowLab/fvcom")
+```
 
 
-#### Gulf of Maine centric products
+# Gulf of Maine centric products
 
 There are a number of models with a Gulf of Maine focus including
-[forecasts](http://www.smast.umassd.edu:8080/thredds/forecasts.html) and
-[archives](http://www.smast.umassd.edu:8080/thredds/catalog/models/fvcom/NECOFS/Archive/NECOFS_GOM/catalog.html).  For each of these OPeNDAP resources we have provided a simple interface class.
+[forecasts](http://www.smast.umassd.edu:8080/thredds/catalog/models/fvcom/NECOFS/Forecasts/catalog.html) and
+[hindcasts](http://www.smast.umassd.edu:8080/thredds/catalog/models/fvcom/NECOFS/Archive/Seaplan_33_Hindcast_v1/catalog.html).  For each of these OPeNDAP resources we have provided a simple interface class.
 
-  + [GOM](http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Forecasts/NECOFS_GOM4_FORECAST.nc.html) `GOMPhysics()`
+  + [GOM](http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Forecasts/NECOFS_GOM3_FORECAST.nc.html) `GOMPhysics()`
   
   + [Boston](http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Forecasts/NECOFS_FVCOM_OCEAN_BOSTON_FORECAST.nc.html) `BostonPhysics()`
   
@@ -54,15 +58,152 @@ There are a number of models with a Gulf of Maine focus including
   
   + [Global](http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Forecasts/NECOFS_FVCOM_OCEAN_GLOBAL_FORECAST.nc.html) `GlobalPhysics()`
   
+# Accessing FVCOM data
 
-
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+suppressPackageStartupMessages({
+  library(sf) 
+  library(fvcom) 
+  library(ncdf4) 
+  library(dplyr)
+})
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Open the FVCOM resource as you would any NetCDF file.
+
+```{r}
+uri_base <- "http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Archive/Seaplan_33_Hindcast_v1"
+uri <- file.path(uri_base, "gom5_201812.nc")
+x <- nc_open(uri)
+x
+```
+
+# Data structure
+
+## Nodes and Elements
+
+The mesh is defined by non-intersecting triangular elements bounded by
+three nodes. Nodes are shown below as the solid dots, three nodes define
+the boundary of element. Scalar values, like temperature, salinty and
+height are defined at nodes. Vector values, such as velocity are defined
+at the element centroids. Within the NetCDF object you can make complete
+identification by examining which variables use the `node` dimensions
+versus those that use the `nele` dimension.
+
+![*Fig. 3.11 **from the user manual**: Schematic of the control volume
+used to calculate scalar variables and vertical velocity used in FVCOM.
+F is a general symbol representing scalar variables such as zeta, T, S,
+Km, Kh, and vertical velocity. A **solid dot** is the node of the
+triangles where scalar variable or vertical velocity is calculated and a
+**crossed open circle** is the centroid of a triangle where the
+horizontal velocity is calculated.*](inst/images/nodes-elements.png)
+
+## Node and Element locations
+
+Use the functions `fvcom_nodes` and `fvcom_elems` to extract location
+information as either `xy` or `lonlat` pairs. Note we get both xy and
+lonlat here for nodes. The same can be had for elements.
+
+```{r}
+dplyr::left_join(fvcom::fvcom_nodes(x, what = 'lonlat'),                   
+                 fvcom::fvcom_nodes(x, what = 'xy'), by = "node") 
+```
+
+### Timestamps
+
+Retrieving the timestamps provides you with a choice for assumptions you
+want to make about the hourly model output. Timestamps stored internally
+do not land on each hour.
+
+```{r}
+fvcom_time(x, internal = TRUE) |> head()
+```
+
+We can get a proxy for these times, but *prettily* settled on each hour.
+The choice is yours.
+
+```{r}
+fvcom_time(x, internal = FALSE) |> head()
+```
+
+##  Variables
+
+Variables (the oceanographic ones) can be extract by node or element. It
+is possible to select a subset, but the operation on the whole dataset
+is quick and it is just as easy to subset after you have the table in
+hand.
+
+```{r}
+v <- get_node_var(x, var = 'zeta')
+v
+```
+
+## Mesh
+
+Some computation is required (not a lot) to produce the mesh which is
+comprised of non-intersecting polygons (triangles). Meshes can be
+derived from the lists of nodes or the list of elements. We have chosen
+to use elements by default as they are simple to construct from the
+adjancency lists provided in the NetCDF resource.
+
+The each element in the mesh is defined by the three nodes identified by
+index, “p1”, “p2” and “p3”. The geometry is defined by either “lonlat”
+coordinates or projected mercator coordinates, “xy”.
+
+```{r}
+mesh <- get_mesh_geometry(x, what = 'lonlat') 
+mesh
+```
+
+```{r}
+plot(sf::st_geometry(mesh), axes = TRUE)
+```
+
+
+### Mesh with variables
+
+We can assign variable values to the polygons by reusing the mesh table.
+These variables are associated with either node or elements. If
+node-referenced variables are requested the mean of three neighboring
+nodes (which define an element) is computed. Where element-referenced
+variables are requested no averaging is done - the values are simply
+assigned to the mesh element.
+
+```{r}
+mesh <- get_mesh(x, vars = c("zeta", "u", "v"), mesh = mesh)
+plot(mesh[c("u", "v")], lty = 'blank', main = c("u", "v"))
+```
+
+
+You can request variables at various dimensions such as times and sigma
+levels/layers - the default is the first of each dimension. While you
+can request one of these in ‘real’ values (such as `POSIXct` time), you
+can also provide a 1-based index into that dimension. The example below
+requests the same variables as above but at the 24th time interval. See
+the functions `get_node_var` and `get_elem_var` for details.
+
+```{r}
+mesh <- get_mesh(x, vars = c("zeta", "u", "v"), mesh = mesh, time = 24)
+plot(mesh[c("u", "v")], lty = 'blank', main = c("u", "v"))
+```
+
+### Rasterize
+
+The mesh can be interpolated on to a regular grid (“rasterize”).
+
+```{r}
+template = default_template(mesh)
+uv <- sapply(c("u", "v"), 
+    function(f) {
+        fvcom::rasterize(mesh[f], template = template) 
+    }, simplify = FALSE)
+par(mfrow = c(1,2))
+plot(uv[['u']], key.pos = NULL, reset = FALSE)
+plot(uv[['v']], key.pos = NULL, reset = FALSE)
+```
+
+
+
+```{r}
+ncdf4::nc_close(x)
+```

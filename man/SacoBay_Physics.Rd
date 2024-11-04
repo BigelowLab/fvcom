@@ -12,28 +12,28 @@ R6 base class for Saco Bay
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{SacoBay_Physics$new()}}
-\item \href{#method-clone}{\code{SacoBay_Physics$clone()}}
+\item \href{#method-SacoBay_Physics-new}{\code{SacoBay_Physics$new()}}
+\item \href{#method-SacoBay_Physics-clone}{\code{SacoBay_Physics$clone()}}
 }
 }
-\if{html}{
-\out{<details ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="fvcom" data-topic="FVCOM_Physics" data-id="append_bounds">}\href{../../fvcom/html/FVCOM_Physics.html#method-append_bounds}{\code{fvcom::FVCOM_Physics$append_bounds()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="fvcom" data-topic="FVCOM_Physics" data-id="char_size">}\href{../../fvcom/html/FVCOM_Physics.html#method-char_size}{\code{fvcom::FVCOM_Physics$char_size()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="fvcom" data-topic="FVCOM_Physics" data-id="get_crs">}\href{../../fvcom/html/FVCOM_Physics.html#method-get_crs}{\code{fvcom::FVCOM_Physics$get_crs()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="fvcom" data-topic="FVCOM_Physics" data-id="get_time">}\href{../../fvcom/html/FVCOM_Physics.html#method-get_time}{\code{fvcom::FVCOM_Physics$get_time()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="fvcom" data-topic="FVCOM_Physics" data-id="mesh_depth">}\href{../../fvcom/html/FVCOM_Physics.html#method-mesh_depth}{\code{fvcom::FVCOM_Physics$mesh_depth()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="fvcom" data-topic="FVCOM_Physics" data-id="mesh_metrics">}\href{../../fvcom/html/FVCOM_Physics.html#method-mesh_metrics}{\code{fvcom::FVCOM_Physics$mesh_metrics()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="fvcom" data-topic="FVCOM_Physics" data-id="plot">}\href{../../fvcom/html/FVCOM_Physics.html#method-plot}{\code{fvcom::FVCOM_Physics$plot()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="fvcom" data-topic="FVCOM_Physics" data-id="print">}\href{../../fvcom/html/FVCOM_Physics.html#method-print}{\code{fvcom::FVCOM_Physics$print()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="fvcom" data-topic="FVCOM_Physics" data-id="random_points">}\href{../../fvcom/html/FVCOM_Physics.html#method-random_points}{\code{fvcom::FVCOM_Physics$random_points()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="fvcom" data-topic="FVCOM_Physics" data-id="append_bounds"><a href='../../fvcom/html/FVCOM_Physics.html#method-FVCOM_Physics-append_bounds'><code>fvcom::FVCOM_Physics$append_bounds()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="fvcom" data-topic="FVCOM_Physics" data-id="char_size"><a href='../../fvcom/html/FVCOM_Physics.html#method-FVCOM_Physics-char_size'><code>fvcom::FVCOM_Physics$char_size()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="fvcom" data-topic="FVCOM_Physics" data-id="get_crs"><a href='../../fvcom/html/FVCOM_Physics.html#method-FVCOM_Physics-get_crs'><code>fvcom::FVCOM_Physics$get_crs()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="fvcom" data-topic="FVCOM_Physics" data-id="get_time"><a href='../../fvcom/html/FVCOM_Physics.html#method-FVCOM_Physics-get_time'><code>fvcom::FVCOM_Physics$get_time()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="fvcom" data-topic="FVCOM_Physics" data-id="mesh_depth"><a href='../../fvcom/html/FVCOM_Physics.html#method-FVCOM_Physics-mesh_depth'><code>fvcom::FVCOM_Physics$mesh_depth()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="fvcom" data-topic="FVCOM_Physics" data-id="mesh_metrics"><a href='../../fvcom/html/FVCOM_Physics.html#method-FVCOM_Physics-mesh_metrics'><code>fvcom::FVCOM_Physics$mesh_metrics()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="fvcom" data-topic="FVCOM_Physics" data-id="plot"><a href='../../fvcom/html/FVCOM_Physics.html#method-FVCOM_Physics-plot'><code>fvcom::FVCOM_Physics$plot()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="fvcom" data-topic="FVCOM_Physics" data-id="print"><a href='../../fvcom/html/FVCOM_Physics.html#method-FVCOM_Physics-print'><code>fvcom::FVCOM_Physics$print()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="fvcom" data-topic="FVCOM_Physics" data-id="random_points"><a href='../../fvcom/html/FVCOM_Physics.html#method-FVCOM_Physics-random_points'><code>fvcom::FVCOM_Physics$random_points()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-SacoBay_Physics-new"></a>}}
+\if{latex}{\out{\hypertarget{method-SacoBay_Physics-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{SacoBay_Physics$new(...)}\if{html}{\out{</div>}}
@@ -48,8 +48,8 @@ R6 base class for Saco Bay
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-SacoBay_Physics-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-SacoBay_Physics-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

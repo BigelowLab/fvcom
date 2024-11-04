@@ -4,7 +4,7 @@
 \alias{default_template}
 \title{Retrieve a raster template that covers the provided mesh}
 \usage{
-default_template(x, res = c(0.01, 0.01), crs = sf::st_crs(x)[["epsg"]], ...)
+default_template(x, res = c(0.01, 0.01), crs = sf::st_crs(x), value = NA_real_)
 }
 \arguments{
 \item{x}{the mesh geometry}
@@ -14,7 +14,7 @@ then it is used in x and y directions.}
 
 \item{crs}{character string of the mesh}
 
-\item{...}{further arguments for \code{\link[raster]{raster}}}
+\item{value}{numeric, the value to assign to cells}
 }
 \value{
 a raster layer

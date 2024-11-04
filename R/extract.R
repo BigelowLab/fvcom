@@ -80,7 +80,7 @@ get_node_mesh <- function(x,
                           fun = mean,
                           na.rm = TRUE,
                           ...){
-  v <- get_node_var(x, vars, ...)
+  vals <- get_node_var(x, vars, ...)
   m <- as.matrix(mesh |>
                    sf::st_set_geometry(NULL) |>
                    dplyr::select(.data$p1, .data$p2, .data$p3))
@@ -88,7 +88,7 @@ get_node_mesh <- function(x,
     if (var %in% names(mesh)){
       mesh[[var]] <- sapply(seq_len(nrow(mesh)),
                                function(i){
-                                 fun((v |>
+                                 fun((vals |>
                                         dplyr::slice(m[i,]))[[var]], na.rm = na.rm)
                                })
     } else {
@@ -96,7 +96,7 @@ get_node_mesh <- function(x,
         dplyr::mutate(!!var :=
                       sapply(seq_len(nrow(mesh)),
                              function(i){
-                               fun((v |>
+                               fun((vals |>
                                      dplyr::slice(m[i,]))[[var]], na.rm = na.rm)
                              })) |>
         dplyr::relocate(dplyr::all_of(var), .before = "p1")
@@ -118,14 +118,14 @@ get_elem_mesh <- function(x,
                           mesh = get_elem_mesh_geometry(x, ordered = FALSE),
                           ...){
 
-  v <- get_elem_var(x, vars, ...) |>
-    dplyr::select(-.data$elem)
+  vals <- get_elem_var(x, vars, ...) |>
+    dplyr::select(-dplyr::all_of("elem"))
   for (var in vars){
     if (var %in% names(mesh)){
-      mesh[[var]] <- v[[var]]
+      mesh[[var]] <- vals[[var]]
     } else {
       mesh <- mesh |>
-        dplyr::mutate(!!var := v[[var]]) |>
+        dplyr::mutate(!!var := vals[[var]]) |>
         dplyr::relocate(dplyr::all_of(var), .before = "p1")
     }
   }
@@ -291,32 +291,22 @@ distinct_polygons <- function(x,
 #' @param x ncdf4 object
 #' @param what character either 'lonlat' or 'xy'
 #' @param form character specifies output form "table", "raster" or "mesh"
-#' @return something
+#' @return table, sf or stars object
 bathymetry <- function(x,
                        what = c("lonlat", "xy")[1],
-                       form = c("table", "raster", "mesh")[1]){
+                       form = c("table", "raster", "sf")[1]){
 
   xyz <- dplyr::bind_cols(
     fvcom_nodes(x, what = what),
     dplyr::tibble(bathymetry = ncdf4::ncvar_get(x, "h")))
   if (tolower(form[1]) == "raster"){
-    xr <- range(xyz$lon)
-    yr <- range(xyz$lat)
-    r <- 0.01
-    template <- raster::raster(res = r,
-                       xmn = xr[1] - r/2,
-                       xmx = xr[2] + r/2,
-                       ymn = yr[1] - r/2,
-                       ymx = yr[2] + r/2,
-                       crs = fvcom_crs(what[1]))
     xyz <- sf::st_as_sf(xyz, coords = c("lon", "lat"),
                         crs = fvcom_crs(what[1]))
-    xyz <- raster::rasterize(xyz, template,
-                             field = "bathymetry",
-                             fun = mean)
-
-  } else if (tolower(form[1]) == "mesh"){
-    # uhh?
+    xyz = rasterize(xyz)
+    
+  } else if (tolower(form[1]) == "sf"){
+    xyz <- sf::st_as_sf(xyz, coords = c("lon", "lat"),
+                        crs = fvcom_crs(what[1]))
   }
   xyz
 }

@@ -8,7 +8,7 @@ with positive downward.}
 bathymetry(
   x,
   what = c("lonlat", "xy")[1],
-  form = c("table", "raster", "mesh")[1]
+  form = c("table", "raster", "sf")[1]
 )
 }
 \arguments{
@@ -19,7 +19,7 @@ bathymetry(
 \item{form}{character specifies output form "table", "raster" or "mesh"}
 }
 \value{
-something
+table, sf or stars object
 }
 \description{
 Retrieve bathymetry "sea_floor_depth_below_geoid" in meters

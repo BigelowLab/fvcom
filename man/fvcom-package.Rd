@@ -8,3 +8,10 @@
 \description{
 Convenience tools for accessing FVCOM NetCDF files
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/BigelowLab/fvcom}
+}
+
+}

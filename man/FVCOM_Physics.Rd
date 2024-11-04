@@ -38,22 +38,22 @@ R6 base class suitable for inheritance by other classes
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{FVCOM_Physics$new()}}
-\item \href{#method-print}{\code{FVCOM_Physics$print()}}
-\item \href{#method-get_crs}{\code{FVCOM_Physics$get_crs()}}
-\item \href{#method-get_time}{\code{FVCOM_Physics$get_time()}}
-\item \href{#method-random_points}{\code{FVCOM_Physics$random_points()}}
-\item \href{#method-char_size}{\code{FVCOM_Physics$char_size()}}
-\item \href{#method-mesh_metrics}{\code{FVCOM_Physics$mesh_metrics()}}
-\item \href{#method-mesh_depth}{\code{FVCOM_Physics$mesh_depth()}}
-\item \href{#method-append_bounds}{\code{FVCOM_Physics$append_bounds()}}
-\item \href{#method-plot}{\code{FVCOM_Physics$plot()}}
-\item \href{#method-clone}{\code{FVCOM_Physics$clone()}}
+\item \href{#method-FVCOM_Physics-new}{\code{FVCOM_Physics$new()}}
+\item \href{#method-FVCOM_Physics-print}{\code{FVCOM_Physics$print()}}
+\item \href{#method-FVCOM_Physics-get_crs}{\code{FVCOM_Physics$get_crs()}}
+\item \href{#method-FVCOM_Physics-get_time}{\code{FVCOM_Physics$get_time()}}
+\item \href{#method-FVCOM_Physics-random_points}{\code{FVCOM_Physics$random_points()}}
+\item \href{#method-FVCOM_Physics-char_size}{\code{FVCOM_Physics$char_size()}}
+\item \href{#method-FVCOM_Physics-mesh_metrics}{\code{FVCOM_Physics$mesh_metrics()}}
+\item \href{#method-FVCOM_Physics-mesh_depth}{\code{FVCOM_Physics$mesh_depth()}}
+\item \href{#method-FVCOM_Physics-append_bounds}{\code{FVCOM_Physics$append_bounds()}}
+\item \href{#method-FVCOM_Physics-plot}{\code{FVCOM_Physics$plot()}}
+\item \href{#method-FVCOM_Physics-clone}{\code{FVCOM_Physics$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-FVCOM_Physics-new"></a>}}
+\if{latex}{\out{\hypertarget{method-FVCOM_Physics-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{FVCOM_Physics$new(
@@ -81,8 +81,8 @@ R6 base class suitable for inheritance by other classes
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-print"></a>}}
-\if{latex}{\out{\hypertarget{method-print}{}}}
+\if{html}{\out{<a id="method-FVCOM_Physics-print"></a>}}
+\if{latex}{\out{\hypertarget{method-FVCOM_Physics-print}{}}}
 \subsection{Method \code{print()}}{
 Pretty print
 \subsection{Usage}{
@@ -91,8 +91,8 @@ Pretty print
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_crs"></a>}}
-\if{latex}{\out{\hypertarget{method-get_crs}{}}}
+\if{html}{\out{<a id="method-FVCOM_Physics-get_crs"></a>}}
+\if{latex}{\out{\hypertarget{method-FVCOM_Physics-get_crs}{}}}
 \subsection{Method \code{get_crs()}}{
 Retrieve the CRS
 \subsection{Usage}{
@@ -111,8 +111,8 @@ CRS in the specified form
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_time"></a>}}
-\if{latex}{\out{\hypertarget{method-get_time}{}}}
+\if{html}{\out{<a id="method-FVCOM_Physics-get_time"></a>}}
+\if{latex}{\out{\hypertarget{method-FVCOM_Physics-get_time}{}}}
 \subsection{Method \code{get_time()}}{
 retrieve the time relative to some epoch/origin
 \subsection{Usage}{
@@ -130,8 +130,8 @@ retrieve the time relative to some epoch/origin
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-random_points"></a>}}
-\if{latex}{\out{\hypertarget{method-random_points}{}}}
+\if{html}{\out{<a id="method-FVCOM_Physics-random_points"></a>}}
+\if{latex}{\out{\hypertarget{method-FVCOM_Physics-random_points}{}}}
 \subsection{Method \code{random_points()}}{
 Retriev one or more random points
 \subsection{Usage}{
@@ -159,8 +159,8 @@ sf object of class POINT
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-char_size"></a>}}
-\if{latex}{\out{\hypertarget{method-char_size}{}}}
+\if{html}{\out{<a id="method-FVCOM_Physics-char_size"></a>}}
+\if{latex}{\out{\hypertarget{method-FVCOM_Physics-char_size}{}}}
 \subsection{Method \code{char_size()}}{
 find proxy for characteristic size based upon element size
 
@@ -188,8 +188,8 @@ numeric characteristic size
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-mesh_metrics"></a>}}
-\if{latex}{\out{\hypertarget{method-mesh_metrics}{}}}
+\if{html}{\out{<a id="method-FVCOM_Physics-mesh_metrics"></a>}}
+\if{latex}{\out{\hypertarget{method-FVCOM_Physics-mesh_metrics}{}}}
 \subsection{Method \code{mesh_metrics()}}{
 generate kinematics metrics for a given mesh
 \subsection{Usage}{
@@ -215,8 +215,8 @@ mesh (invisibly) with variables added including
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-mesh_depth"></a>}}
-\if{latex}{\out{\hypertarget{method-mesh_depth}{}}}
+\if{html}{\out{<a id="method-FVCOM_Physics-mesh_depth"></a>}}
+\if{latex}{\out{\hypertarget{method-FVCOM_Physics-mesh_depth}{}}}
 \subsection{Method \code{mesh_depth()}}{
 Compute the mean depth of each mesh element
 \subsection{Usage}{
@@ -228,8 +228,8 @@ mesh (invisibly) with depth added
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-append_bounds"></a>}}
-\if{latex}{\out{\hypertarget{method-append_bounds}{}}}
+\if{html}{\out{<a id="method-FVCOM_Physics-append_bounds"></a>}}
+\if{latex}{\out{\hypertarget{method-FVCOM_Physics-append_bounds}{}}}
 \subsection{Method \code{append_bounds()}}{
 append the boundary info to the mesh table
 \subsection{Usage}{
@@ -247,8 +247,8 @@ mesh invisibly with appended boundary variable where
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot"></a>}}
-\if{latex}{\out{\hypertarget{method-plot}{}}}
+\if{html}{\out{<a id="method-FVCOM_Physics-plot"></a>}}
+\if{latex}{\out{\hypertarget{method-FVCOM_Physics-plot}{}}}
 \subsection{Method \code{plot()}}{
 Plot element mesh
 \subsection{Usage}{
@@ -264,8 +264,8 @@ Plot element mesh
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-FVCOM_Physics-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-FVCOM_Physics-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
